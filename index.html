@@ -6,54 +6,52 @@
 <meta name="theme-color" content="#0a1018"/>
 <title>Laramie Plains — Star-Well Survey</title>
 <style>
-:root{--bg:#0a1018;--panel:#121a24;--gold:#e0b45c;--gold2:#c4923a;--ink:#e8e2d4;--muted:#8a9a9a;--heart:#e07060;--accent:#3d8a7a}
+:root{--bg:#080e16;--panel:#101820;--gold:#e0b45c;--gold2:#c4923a;--ink:#e8e2d4;--muted:#8a9a9a;--heart:#e07060;--accent:#3d8a7a}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none}
 body{display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-header{width:min(100%,720px);padding:10px 14px 6px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.brand{display:flex;flex-direction:column}.brand small{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2)}.brand strong{font-size:1.25rem;font-weight:700;color:var(--gold);letter-spacing:.02em;text-shadow:0 0 20px rgba(224,180,92,.25)}
-.top-actions{display:flex;gap:8px;align-items:center}
-.top-actions span{font-size:13px;color:var(--gold)}
-.btn{background:transparent;border:1px solid var(--gold2);color:var(--gold);padding:6px 11px;border-radius:6px;font-size:12px;cursor:pointer}
-.btn:active,.btn.on{background:rgba(224,180,92,.15);border-color:var(--gold)}
-.game-wrap{position:relative;width:min(100vw - 12px,640px);aspect-ratio:16/10;max-height:58vh;border:2px solid #243040;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px #1a2430,0 14px 40px rgba(0,0,0,.55);background:#1a2a1c}
+header{width:min(100%,900px);padding:8px 12px 4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.brand small{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);display:block}
+.brand strong{font-size:1.15rem;font-weight:700;color:var(--gold);letter-spacing:.02em;text-shadow:0 0 18px rgba(224,180,92,.3)}
+.top-actions{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--gold)}
+.btn{background:transparent;border:1px solid var(--gold2);color:var(--gold);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer}
+.btn:active,.btn.on{background:rgba(224,180,92,.18);border-color:var(--gold)}
+.game-wrap{position:relative;width:min(100vw - 8px, 860px);aspect-ratio:16/10;max-height:min(68vh, 520px);border:2px solid #243040;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px #1a2430,0 12px 36px rgba(0,0,0,.55);background:#1a2a1c}
 #game{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
-.toast{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:rgba(10,16,24,.93);border:1px solid var(--gold2);color:var(--ink);padding:7px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:92%;text-align:center;z-index:6}
+.toast{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(8,14,22,.94);border:1px solid var(--gold2);color:var(--ink);padding:7px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .22s;pointer-events:none;max-width:92%;text-align:center;z-index:6}
 .toast.show{opacity:1}
-.hud{width:min(100vw - 12px,640px);display:flex;justify-content:space-between;align-items:center;padding:7px 4px 3px;font-size:13px;gap:10px}
-.hearts{color:var(--heart);letter-spacing:1px}
-.obj{color:var(--gold);font-size:12px;text-align:right}
-.controls{display:flex;justify-content:space-between;align-items:center;width:min(100vw - 12px,640px);padding:8px 2px;gap:14px}
-.dpad{display:grid;grid-template-columns:42px 42px 42px;grid-template-rows:42px 42px 42px;gap:3px}
-.dpad button{width:42px;height:42px;border:none;border-radius:9px;background:#1a2434;color:var(--ink);font-size:16px;display:flex;align-items:center;justify-content:center;touch-action:none}
+.hud{width:min(100vw - 8px,860px);display:flex;justify-content:space-between;align-items:center;padding:6px 4px 2px;font-size:12px;gap:8px}
+.obj{color:var(--gold);font-size:12px;text-align:right;max-width:55%}
+.controls{display:flex;justify-content:space-between;align-items:center;width:min(100vw - 8px,860px);padding:6px 2px;gap:12px}
+.dpad{display:grid;grid-template-columns:46px 46px 46px;grid-template-rows:46px 46px 46px;gap:3px}
+.dpad button{width:46px;height:46px;border:none;border-radius:10px;background:#1a2434;color:var(--ink);font-size:17px;display:flex;align-items:center;justify-content:center;touch-action:none}
 .dpad .u{grid-column:2;grid-row:1}.dpad .l{grid-column:1;grid-row:2}.dpad .d{grid-column:2;grid-row:3}.dpad .r{grid-column:3;grid-row:2}
 .dpad button:active,.dpad button.p{background:#2a3a50;color:var(--gold)}
-.abtn{display:flex;flex-direction:column;gap:7px}
-.abtn button{min-width:108px;padding:11px 14px;border:none;border-radius:9px;background:#2d5a4a;color:#e8f0e8;font-weight:600;font-size:12px;letter-spacing:.04em;touch-action:none}
+.abtn{display:flex;flex-direction:column;gap:6px}
+.abtn button{min-width:112px;padding:12px 14px;border:none;border-radius:10px;background:#2d5a4a;color:#e8f0e8;font-weight:600;font-size:12px;letter-spacing:.04em;touch-action:none}
 .abtn .sec{background:#2a3a4c}
+.abtn .sprint{background:#4a3a2a}
 .abtn button:active{filter:brightness(1.12)}
-.menus{display:flex;gap:8px;padding:2px 0 8px}
-.menus button{background:#151e2a;border:1px solid #2a3548;color:var(--muted);padding:7px 12px;border-radius:7px;font-size:12px;cursor:pointer}
+.menus{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 6px;justify-content:center}
+.menus button{background:#151e2a;border:1px solid #2a3548;color:var(--muted);padding:6px 11px;border-radius:7px;font-size:11px;cursor:pointer}
 .menus button:hover{color:var(--ink);border-color:var(--gold2)}
-footer{font-size:11px;color:var(--muted);padding-bottom:6px;text-align:center}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.74);display:flex;align-items:center;justify-content:center;z-index:100;padding:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:100;padding:12px;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal.show{opacity:1;pointer-events:auto}
-.panel{background:var(--panel);border:1px solid #2a3548;border-radius:12px;max-width:400px;width:100%;max-height:78vh;overflow-y:auto;padding:18px 20px 16px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.5)}
-.panel h2{color:var(--gold);font-size:1.1rem;margin-bottom:10px;padding-right:26px}
-.panel p,.panel li{font-size:13.5px;line-height:1.5;margin-bottom:7px}
-.panel ul{padding-left:16px;margin-bottom:8px}
-.close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
-.close:hover{color:var(--ink)}
+.panel{background:var(--panel);border:1px solid #2a3548;border-radius:12px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto;padding:16px 18px 14px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.55)}
+.panel h2{color:var(--gold);font-size:1.05rem;margin-bottom:8px;padding-right:24px}
+.panel p,.panel li{font-size:13px;line-height:1.5;margin-bottom:6px}
+.panel ul{padding-left:15px;margin-bottom:6px}
+.close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
 #modalBody button{margin-top:8px;background:var(--accent);border:none;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px}
-#title{position:absolute;inset:0;background:linear-gradient(180deg,#0c1420 0%,#152018 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;text-align:center;padding:20px;transition:opacity .5s}
+#title{position:absolute;inset:0;background:linear-gradient(180deg,#0a121c 0%,#152018 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;text-align:center;padding:16px;transition:opacity .5s}
 #title.hidden{opacity:0;pointer-events:none}
-#title h1{font-size:clamp(2rem,8vw,3.2rem);font-weight:800;color:var(--gold);letter-spacing:.04em;text-shadow:0 0 30px rgba(224,180,92,.35);margin:6px 0}
-#title .sub{font-size:12px;letter-spacing:.2em;color:var(--gold2);text-transform:uppercase;margin-bottom:8px}
-#title p{max-width:320px;font-size:14px;color:var(--muted);line-height:1.45;margin:10px 0 18px}
-#title .start{background:linear-gradient(180deg,#e0b45c,#c4923a);color:#1a1208;border:none;padding:12px 28px;border-radius:8px;font-weight:700;font-size:14px;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 20px rgba(224,180,92,.3)}
-#title .start:active{transform:scale(.98)}
-@media(min-width:720px){.controls{display:none}.game-wrap{max-height:62vh}}
-@media(max-height:680px){.brand strong{font-size:1.1rem}.game-wrap{max-height:50vh}}
+#title h1{font-size:clamp(1.8rem,7vw,2.8rem);font-weight:800;color:var(--gold);letter-spacing:.04em;text-shadow:0 0 28px rgba(224,180,92,.4);margin:4px 0;line-height:1.05}
+#title .sub{font-size:11px;letter-spacing:.18em;color:var(--gold2);text-transform:uppercase;margin-bottom:6px}
+#title p{max-width:340px;font-size:13px;color:var(--muted);line-height:1.45;margin:8px 0 14px}
+#title .start{background:linear-gradient(180deg,#e0b45c,#c4923a);color:#1a1208;border:none;padding:11px 26px;border-radius:8px;font-weight:700;font-size:13px;letter-spacing:.05em;cursor:pointer;box-shadow:0 4px 18px rgba(224,180,92,.35)}
+@media(min-width:820px){.controls{display:none}.game-wrap{max-height:min(72vh,560px)}}
+@media(max-height:700px){.brand strong{font-size:1rem}.game-wrap{max-height:58vh}}
 </style>
 </head>
 <body>
@@ -67,20 +65,20 @@ footer{font-size:11px;color:var(--muted);padding-bottom:6px;text-align:center}
 </header>
 
 <section class="game-wrap">
-  <canvas id="game" width="640" height="400"></canvas>
+  <canvas id="game" width="800" height="500"></canvas>
   <div id="toast" class="toast"></div>
   <div id="title">
     <div class="sub">Star-Well Survey</div>
     <h1>LARAMIE<br>PLAINS</h1>
-    <p>The Union Pacific has not yet reached these high plains. You arrive with a survey chain and a blank field book. Something under the old well is answering the measurements.</p>
+    <p>The Union Pacific has not yet reached these high plains. You arrive with a survey chain and a blank field book. Something under the old well is answering the measurements — and the storm is coming.</p>
     <button class="start" id="startBtn">BEGIN SURVEY</button>
-    <p style="margin-top:14px;font-size:11px;opacity:.7">WASD / Arrows · Space to interact · X to use tool<br>Best with sound · Saves automatically</p>
+    <p style="margin-top:12px;font-size:11px;opacity:.7">WASD / Arrows · Hold Shift to sprint · Space interact · X tool<br>Larger view · Faster movement · Full atmosphere</p>
   </div>
 </section>
 
 <section class="hud">
-  <div><span class="hearts" id="toolLabel">Survey chain</span></div>
-  <div class="obj" id="objective">Find the brass survey stake near camp</div>
+  <div><span id="toolLabel">Survey chain</span> · <span id="sprintHint" style="color:#8a9a9a;font-size:11px">Hold Shift / Sprint</span></div>
+  <div class="obj" id="objective">Find the brass survey stakes near camp</div>
 </section>
 
 <section class="controls">
@@ -93,6 +91,7 @@ footer{font-size:11px;color:var(--muted);padding-bottom:6px;text-align:center}
   <div class="abtn">
     <button id="interactBtn">INTERACT</button>
     <button class="sec" id="toolBtn">USE TOOL</button>
+    <button class="sprint" id="sprintBtn">SPRINT</button>
   </div>
 </section>
 
@@ -103,7 +102,7 @@ footer{font-size:11px;color:var(--muted);padding-bottom:6px;text-align:center}
   <button id="helpBtn">Help</button>
   <button id="resetBtn">New Game</button>
 </section>
-<footer>Star-Well Survey · Superior edition · One-up to ChatGPT</footer>
+<footer>Star-Well Survey · v3 — larger view · sprint · storm · deeper mystery</footer>
 
 <div id="modal" class="modal"><div class="panel"><button class="close" id="closeModal">×</button><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
 
@@ -113,18 +112,18 @@ footer{font-size:11px;color:var(--muted);padding-bottom:6px;text-align:center}
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
-const W = 640, H = 400, T = 32;
+const W = 800, H = 500, T = 40;
 const COLS = 20, ROWS = 12;
 
 // ---------- State ----------
-const SAVE = 'laramieStarWell_v2';
+const SAVE = 'laramieStarWell_v3';
 function fresh() {
   return {
     started: false, zone: 'camp', x: 4.5, y: 6.5, dir: 'down',
     hp: 5, maxHp: 5, coins: 0,
     stakeA: false, stakeB: false, heardWell: false, hasHammer: false, hasKey: false, hasMap: false,
     opened: {}, flags: {}, notes: [],
-    facing: 'down', anim: 0, invuln: 0, atk: 0, interactCd: 0
+    facing: 'down', anim: 0, invuln: 0, atk: 0, interactCd: 0, sprint: false
   };
 }
 let S = load() || fresh();
@@ -133,18 +132,20 @@ let keys = {}, touch = {};
 let camX = 0, camY = 0, shake = 0;
 let last = 0, footT = 0, time = 0;
 let muted = false;
+let lightning = 0, stormT = 0, rain = [];
+let exitCd = 0;
 
 function save(){ try{ localStorage.setItem(SAVE, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ return JSON.parse(localStorage.getItem(SAVE)||'null'); }catch(e){ return null; } }
 
-// ---------- Audio (layered, richer) ----------
+// ---------- Audio (much richer) ----------
 let AC = null, master, musicG, sfxG, ambNodes = [];
 function ensureAudio(){
   if(AC) return;
   AC = new (window.AudioContext||window.webkitAudioContext)();
-  master = AC.createGain(); master.gain.value = 0.75; master.connect(AC.destination);
-  musicG = AC.createGain(); musicG.gain.value = 0.22; musicG.connect(master);
-  sfxG = AC.createGain(); sfxG.gain.value = 0.5; sfxG.connect(master);
+  master = AC.createGain(); master.gain.value = 0.78; master.connect(AC.destination);
+  musicG = AC.createGain(); musicG.gain.value = 0.2; musicG.connect(master);
+  sfxG = AC.createGain(); sfxG.gain.value = 0.52; sfxG.connect(master);
 }
 function resume(){ ensureAudio(); if(AC.state==='suspended') AC.resume(); }
 function noiseBuf(sec=2){
@@ -154,14 +155,19 @@ function noiseBuf(sec=2){
 }
 function startAmbient(){
   if(!AC || ambNodes.length || muted) return;
-  const src = AC.createBufferSource(); src.buffer = noiseBuf(3); src.loop = true;
-  const f = AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=380; f.Q.value=0.5;
-  const g = AC.createGain(); g.gain.value=0.055;
+  // Wind
+  const src = AC.createBufferSource(); src.buffer = noiseBuf(4); src.loop = true;
+  const f = AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=320; f.Q.value=0.4;
+  const g = AC.createGain(); g.gain.value=0.06;
   src.connect(f); f.connect(g); g.connect(master); src.start();
-  const lfo = AC.createOscillator(); lfo.frequency.value=0.07;
-  const lg = AC.createGain(); lg.gain.value=90;
+  const lfo = AC.createOscillator(); lfo.frequency.value=0.06;
+  const lg = AC.createGain(); lg.gain.value=110;
   lfo.connect(lg); lg.connect(f.frequency); lfo.start();
-  ambNodes = [src,f,g,lfo,lg];
+  // Distant low drone
+  const drone = AC.createOscillator(); drone.type='sine'; drone.frequency.value=55;
+  const dg = AC.createGain(); dg.gain.value=0.025;
+  drone.connect(dg); dg.connect(master); drone.start();
+  ambNodes = [src,f,g,lfo,lg,drone,dg];
 }
 function tone(freq, type, dur, vol=0.25, slide=0){
   if(muted||!AC) return;
@@ -182,24 +188,32 @@ function noise(dur, vol=0.15, freq=700){
   g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+dur);
   s.connect(f); f.connect(g); g.connect(sfxG); s.start(); s.stop(AC.currentTime+dur+0.04);
 }
+function thunder(){
+  if(muted||!AC) return;
+  resume();
+  noise(0.8, 0.35, 120);
+  setTimeout(()=>noise(0.6, 0.22, 80), 120);
+  tone(40, 'sawtooth', 0.9, 0.12, -15);
+}
 const SFX = {
-  step: ()=>noise(0.05,0.1,550+Math.random()*180),
-  interact: ()=>{ tone(480,'triangle',0.07,0.22); tone(720,'sine',0.1,0.12); },
-  collect: ()=>{ tone(620,'sine',0.09,0.28); setTimeout(()=>tone(880,'sine',0.14,0.22),55); setTimeout(()=>tone(1100,'triangle',0.18,0.18),120); },
-  stake: ()=>{ tone(440,'square',0.1,0.18); setTimeout(()=>tone(554,'square',0.1,0.16),80); setTimeout(()=>tone(659,'square',0.22,0.2),160); },
-  chest: ()=>{ tone(180,'sawtooth',0.12,0.14,70); setTimeout(()=>tone(380,'triangle',0.18,0.18),90); },
-  hurt: ()=>{ tone(160,'sawtooth',0.16,0.28,-50); noise(0.12,0.14,280); },
-  swing: ()=>noise(0.09,0.16,1100),
-  ui: ()=>tone(680,'sine',0.04,0.1),
-  portal: ()=>{ tone(220,'sine',0.25,0.2); setTimeout(()=>tone(330,'sine',0.3,0.16),150); },
-  well: ()=>{ tone(196,'sine',0.35,0.22); setTimeout(()=>tone(247,'sine',0.35,0.2),180); setTimeout(()=>tone(294,'sine',0.5,0.18),380); },
-  success: ()=>{ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,'triangle',0.22,0.2),i*85)); }
+  step: ()=>noise(0.04,0.08,500+Math.random()*200),
+  interact: ()=>{ tone(480,'triangle',0.06,0.2); tone(720,'sine',0.09,0.1); },
+  collect: ()=>{ tone(620,'sine',0.08,0.26); setTimeout(()=>tone(880,'sine',0.12,0.2),50); setTimeout(()=>tone(1100,'triangle',0.16,0.16),110); },
+  stake: ()=>{ tone(440,'square',0.09,0.16); setTimeout(()=>tone(554,'square',0.09,0.14),70); setTimeout(()=>tone(659,'square',0.2,0.18),140); },
+  chest: ()=>{ tone(180,'sawtooth',0.1,0.12,60); setTimeout(()=>tone(380,'triangle',0.15,0.16),80); },
+  hurt: ()=>{ tone(150,'sawtooth',0.14,0.26,-45); noise(0.1,0.12,260); },
+  swing: ()=>noise(0.08,0.14,1000),
+  ui: ()=>tone(680,'sine',0.035,0.09),
+  portal: ()=>{ tone(220,'sine',0.2,0.18); setTimeout(()=>tone(330,'sine',0.25,0.14),120); },
+  well: ()=>{ tone(196,'sine',0.3,0.2); setTimeout(()=>tone(247,'sine',0.3,0.18),160); setTimeout(()=>tone(294,'sine',0.45,0.16),340); },
+  success: ()=>{ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,'triangle',0.2,0.18),i*80)); },
+  thunder
 };
 let musicOn=false, musicT=null;
 function startMusic(){
   if(muted||musicOn||!AC) return;
   musicOn=true;
-  const scale=[146.8,174.6,196,220,261.6,293.7];
+  const scale=[130.8,146.8,164.8,196,220,261.6,293.7];
   function bar(){
     if(!musicOn||muted) return;
     const root=scale[Math.floor(Math.random()*scale.length)];
@@ -207,17 +221,26 @@ function startMusic(){
       const o=AC.createOscillator(), g=AC.createGain();
       o.type=j===0?'triangle':'sine'; o.frequency.value=f;
       g.gain.setValueAtTime(0.0001,AC.currentTime);
-      g.gain.linearRampToValueAtTime(j===0?0.09:0.045,AC.currentTime+0.5);
-      g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+2.8);
-      o.connect(g); g.connect(musicG); o.start(); o.stop(AC.currentTime+3);
+      g.gain.linearRampToValueAtTime(j===0?0.08:0.04,AC.currentTime+0.6);
+      g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+3.2);
+      o.connect(g); g.connect(musicG); o.start(); o.stop(AC.currentTime+3.4);
     });
-    musicT=setTimeout(bar, 2200+Math.random()*1200);
+    // occasional low pulse
+    if(Math.random()<0.35){
+      const o2=AC.createOscillator(), g2=AC.createGain();
+      o2.type='sine'; o2.frequency.value=root*0.5;
+      g2.gain.setValueAtTime(0.0001,AC.currentTime);
+      g2.gain.linearRampToValueAtTime(0.05,AC.currentTime+0.8);
+      g2.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+2.5);
+      o2.connect(g2); g2.connect(musicG); o2.start(); o2.stop(AC.currentTime+2.6);
+    }
+    musicT=setTimeout(bar, 2400+Math.random()*1400);
   }
   bar();
 }
 function stopMusic(){ musicOn=false; if(musicT) clearTimeout(musicT); }
 
-// ---------- Zones ----------
+// ---------- Zones (safe symmetric links) ----------
 const zones = {
   camp: {
     name:'Survey Camp', biome:'prairie',
@@ -233,7 +256,6 @@ const zones = {
       {x:5,y:4,k:'fire'},
       {x:14,y:9,k:'tent'}
     ],
-    // Markers on border; arrival points safely inland so no instant bounce-back
     links:[
       {x:19, y:6, to:'town',  tx:2.5, ty:6,   label:'TOWN'},
       {x:10, y:0, to:'ridge', tx:10,  ty:9.5, label:'RIDGE'}
@@ -314,10 +336,30 @@ function makeGrid(base){
 }
 
 const NPC = {
-  mara: ['You made it. The railroad is still a day behind.','Two brass stakes went missing in the night. Find them both.','The old well… the chain trembles near it.'],
-  louisa: ['Canvas, beans, and bad coffee until the next train.','Surveyors lost their stakes. Bad luck on these plains.','The ridge has coyotes. Keep your eyes open.'],
-  deputy: ['Quiet night so far. Prefer it that way.','Ruffians near the railhead. Watch yourself.','Anything that does not belong to this century — report it.'],
-  crowe: ['Tracks end here for now. We push west at first light.','Some men swear they heard singing from the canyon.','There is a chest by the freight office. Not mine.']
+  mara: [
+    'You made it. The railroad is still a day behind the survey line.',
+    'Two brass stakes went missing in the night. Find them both before the storm.',
+    'The old well… the chain trembles near it. My father said La Ramée never left these plains.',
+    'When both stakes are set, the well will answer. I have heard it once.'
+  ],
+  louisa: [
+    'Canvas, beans, and bad coffee until the next train.',
+    'Surveyors lost their stakes. Bad luck on these high plains.',
+    'The ridge has coyotes, and something worse after dark.',
+    'Martha at the railhead heard singing from the canyon. Not wind.'
+  ],
+  deputy: [
+    'Quiet night so far. Prefer it that way.',
+    'Ruffians near the railhead. Watch yourself if you go east.',
+    'Anything that does not belong to this century — report it to me.',
+    'The storm line is moving in from the Medicine Bows. Get your work done.'
+  ],
+  crowe: [
+    'Tracks end here for now. We push west at first light if the weather holds.',
+    'Some of the men swear they heard singing from the canyon after sundown.',
+    'There is a chest by the freight office. Not mine. Not asking.',
+    'The rails hum when the wind comes off the ridge. Always have.'
+  ]
 };
 
 // ---------- Helpers ----------
@@ -326,47 +368,64 @@ function toast(msg, ms=2200){
   const t=$('toast'); t.textContent=msg; t.classList.add('show');
   clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),ms);
 }
-function note(t){ if(!S.notes.includes(t)){ S.notes.unshift(t); if(S.notes.length>14) S.notes.pop(); save(); } }
+function note(t){ if(!S.notes.includes(t)){ S.notes.unshift(t); if(S.notes.length>16) S.notes.pop(); save(); } }
 function dialog(title, body){ SFX.ui(); $('modalTitle').textContent=title; $('modalBody').innerHTML=body; $('modal').classList.add('show'); }
 function closeDialog(){ $('modal').classList.remove('show'); }
-function near(o,d=1.2){ return Math.hypot(S.x-(o.x+0.5), S.y-(o.y+0.5)) < d; }
+function near(o,d=1.25){ return Math.hypot(S.x-(o.x+0.5), S.y-(o.y+0.5)) < d; }
 function alive(o){ if(o.k==='enemy'&&(o.hp||0)<=0) return false; if(o.k==='chest'&&S.opened[o.id]) return false; return true; }
 function Z(){ return zones[S.zone]; }
 
 function spawn(x,y,opt={}){
-  particles.push({x,y,vx:opt.vx||(Math.random()-0.5)*50,vy:opt.vy||(Math.random()-0.5)*35-15,
-    life:opt.life||0.5+Math.random()*0.5, max:opt.life||0.7, c:opt.c||'#c8b070', s:opt.s||1.5+Math.random()*2});
+  particles.push({x,y,vx:opt.vx||(Math.random()-0.5)*55,vy:opt.vy||(Math.random()-0.5)*40-18,
+    life:opt.life||0.45+Math.random()*0.5, max:opt.life||0.65, c:opt.c||'#c8b070', s:opt.s||1.5+Math.random()*2.2});
 }
 function burst(x,y,n=8,c){ for(let i=0;i<n;i++) spawn(x,y,{c}); }
 
-// ---------- Movement & combat ----------
+// ---------- Storm / environment ----------
+function updateStorm(dt){
+  stormT += dt;
+  // Occasional lightning
+  if(lightning > 0) lightning = Math.max(0, lightning - dt*2.2);
+  if(stormT > 8 + Math.random()*14){
+    stormT = 0;
+    lightning = 1;
+    shake = Math.max(shake, 5 + Math.random()*4);
+    SFX.thunder();
+    // Spawn a burst of rain particles
+    for(let i=0;i<40;i++){
+      rain.push({x:Math.random()*W, y:-10-Math.random()*80, vy:280+Math.random()*120, life:1.2+Math.random()});
+    }
+  }
+  // Continuous light rain
+  if(Math.random() < 0.4){
+    rain.push({x:Math.random()*W, y:-5, vy:220+Math.random()*100, life:0.9+Math.random()*0.5});
+  }
+  rain = rain.filter(r => {
+    r.y += r.vy * dt;
+    r.life -= dt;
+    return r.life > 0 && r.y < H + 20;
+  });
+}
+
+// ---------- Movement (faster + sprint) ----------
 function solid(tx,ty){
   if(tx<0||ty<0||tx>=COLS||ty>=ROWS) return true;
   return Z().tiles[ty][tx]==='#';
 }
-let exitCd = 0; // prevents double-triggers
 function tryExit(){
   if(exitCd > 0) return;
   const z = Z();
-  // Strict edge detection – only fire when actually at the border
   for(const L of z.links){
     let hit = false;
-    // Right edge
     if(L.x >= COLS-2 && S.x > COLS-1.55 && Math.abs(S.y - L.y) < 1.6) hit = true;
-    // Left edge
     else if(L.x <= 1 && S.x < 1.45 && Math.abs(S.y - L.y) < 1.6) hit = true;
-    // Top edge
     else if(L.y <= 1 && S.y < 1.45 && Math.abs(S.x - L.x) < 1.6) hit = true;
-    // Bottom edge
     else if(L.y >= ROWS-2 && S.y > ROWS-1.55 && Math.abs(S.x - L.x) < 1.6) hit = true;
-
     if(hit){
-      exitCd = 1.1;           // longer lockout prevents bounce-back
+      exitCd = 1.15;
       SFX.portal();
       S.zone = L.to;
-      // Land exactly where we intend (already inland)
-      S.x = L.tx;
-      S.y = L.ty;
+      S.x = L.tx; S.y = L.ty;
       toast('Trail open: ' + zones[S.zone].name);
       save();
       burst(S.x*T, S.y*T, 8, '#e0b45c');
@@ -374,7 +433,6 @@ function tryExit(){
     }
   }
 }
-
 function move(dt){
   exitCd = Math.max(0, exitCd - dt);
   let dx=0, dy=0;
@@ -382,23 +440,27 @@ function move(dt){
   if(keys.ArrowDown||keys.s||touch.down) dy+=1;
   if(keys.ArrowLeft||keys.a||touch.left) dx-=1;
   if(keys.ArrowRight||keys.d||touch.right) dx+=1;
+  S.sprint = !!(keys.Shift||keys.shift||touch.sprint);
   if(dx||dy){
     const len=Math.hypot(dx,dy)||1; dx/=len; dy/=len;
     if(Math.abs(dx)>Math.abs(dy)) S.dir = dx>0?'right':'left';
     else S.dir = dy>0?'down':'up';
-    const sp=3.8;
+    // Base speed ~40% faster than original; sprint another +45%
+    const sp = S.sprint ? 6.4 : 4.5;
     const nx=S.x+dx*sp*dt, ny=S.y+dy*sp*dt;
-    // Slightly softer collision so you can reach edge exits
     if(!solid(Math.floor(nx),Math.floor(S.y))&&!solid(Math.floor(nx+0.3),Math.floor(S.y))&&
        !solid(Math.floor(nx),Math.floor(S.y+0.3))&&!solid(Math.floor(nx+0.3),Math.floor(S.y+0.3))) S.x=nx;
     if(!solid(Math.floor(S.x),Math.floor(ny))&&!solid(Math.floor(S.x+0.3),Math.floor(ny))&&
        !solid(Math.floor(S.x),Math.floor(ny+0.3))&&!solid(Math.floor(S.x+0.3),Math.floor(ny+0.3))) S.y=ny;
-    // Clamp so player never leaves the playable area
-    S.x = Math.max(0.6, Math.min(COLS-1.1, S.x));
-    S.y = Math.max(0.6, Math.min(ROWS-1.1, S.y));
-    S.anim+=dt*9;
-    footT-=dt;
-    if(footT<=0){ SFX.step(); footT=0.26; if(Math.random()<0.45) spawn(S.x*T+16,S.y*T+28,{c:'#a09060',s:1.5,life:0.35}); }
+    S.x = Math.max(0.55, Math.min(COLS-1.05, S.x));
+    S.y = Math.max(0.55, Math.min(ROWS-1.05, S.y));
+    S.anim += dt * (S.sprint ? 14 : 10);
+    footT -= dt;
+    if(footT<=0){
+      SFX.step();
+      footT = S.sprint ? 0.16 : 0.24;
+      if(Math.random()<0.5) spawn(S.x*T+16,S.y*T+30,{c:'#a09060',s:1.6,life:0.3});
+    }
     tryExit();
   } else S.anim=0;
 
@@ -406,12 +468,12 @@ function move(dt){
   for(const o of Z().objs){
     if(o.k!=='enemy'||!alive(o)) continue;
     const dist=Math.hypot(S.x-(o.x+0.5),S.y-(o.y+0.5));
-    if(dist<5.5&&dist>0.55){
+    if(dist<5.8&&dist>0.55){
       const a=Math.atan2(S.y-(o.y+0.5),S.x-(o.x+0.5));
-      o.x+=Math.cos(a)*1.5*dt; o.y+=Math.sin(a)*1.5*dt;
+      o.x+=Math.cos(a)*1.55*dt; o.y+=Math.sin(a)*1.55*dt;
     }
     if(dist<0.65&&S.invuln<=0){
-      S.hp=Math.max(0,S.hp-1); S.invuln=1.05; SFX.hurt(); shake=6;
+      S.hp=Math.max(0,S.hp-1); S.invuln=1.05; SFX.hurt(); shake=7;
       burst(S.x*T+16,S.y*T+16,12,'#e07060'); toast('You take a hit!');
       if(S.hp<=0){ toast('You fall… waking at camp.'); S.hp=S.maxHp; S.zone='camp'; S.x=4.5; S.y=6.5; save(); }
     }
@@ -420,37 +482,37 @@ function move(dt){
 
 function interact(){
   if(S.interactCd>0||!S.started) return;
-  S.interactCd=0.32; resume(); SFX.interact();
+  S.interactCd=0.3; resume(); SFX.interact();
   const o=Z().objs.find(obj=>near(obj)&&alive(obj));
   if(!o){ toast('Nothing close enough.'); return; }
   switch(o.k){
     case'stake':
-      if(o.id==='A'&&!S.stakeA){ S.stakeA=true; note('Brass stake A recovered. Coordinates refuse to match the stars.'); SFX.stake(); burst(o.x*T+16,o.y*T+16,14,'#e0b45c'); toast('Survey stake A secured!'); }
-      else if(o.id==='B'&&!S.stakeB){ S.stakeB=true; note('Brass stake B recovered.'); SFX.stake(); burst(o.x*T+16,o.y*T+16,14,'#e0b45c'); toast('Survey stake B secured!'); }
+      if(o.id==='A'&&!S.stakeA){ S.stakeA=true; note('Brass stake A recovered. The coordinates refuse to match any star chart I know.'); SFX.stake(); burst(o.x*T+16,o.y*T+16,14,'#e0b45c'); toast('Survey stake A secured!'); }
+      else if(o.id==='B'&&!S.stakeB){ S.stakeB=true; note('Brass stake B recovered. Together they form a line that ends beneath the old well.'); SFX.stake(); burst(o.x*T+16,o.y*T+16,14,'#e0b45c'); toast('Survey stake B secured!'); }
       else toast('Already recorded.');
-      if(S.stakeA&&S.stakeB&&!S.heardWell){ note('Both stakes point beneath the old well.'); SFX.success(); toast('Quest: investigate the old well.'); }
+      if(S.stakeA&&S.stakeB&&!S.heardWell){ note('Both stakes point to the same impossible place: under the Star-Well.'); SFX.success(); toast('Quest: investigate the old well.'); }
       save(); break;
     case'well':
-      if(!(S.stakeA&&S.stakeB)) dialog('The Old Well','<p>The rim is etched with markings. Your chain trembles, but you need both brass stakes to fix its true position.</p>');
-      else if(!S.heardWell){ S.heardWell=true; SFX.well(); note('The Star-Well answered with three tones. A stair of warm stone appeared.'); dialog('The Star-Well','<p>Three clear tones rise from the dark. A narrow stairway of impossible stone reveals itself. The survey has only just begun.</p>'); save(); }
-      else dialog('The Star-Well','<p>The stair still descends. Whatever waits below remembers Jacques La Ramée.</p>');
+      if(!(S.stakeA&&S.stakeB)) dialog('The Old Well','<p>The rim is etched with markings that look almost like star positions. Your chain trembles, but you need both brass stakes to fix its true location.</p>');
+      else if(!S.heardWell){ S.heardWell=true; SFX.well(); note('The Star-Well answered with three tones. A stair of warm stone appeared. Something down there knows the survey.'); dialog('The Star-Well','<p>Three clear tones rise from the dark. A narrow stairway of impossible stone reveals itself.</p><p><em>“Surveyor,”</em> a voice without a throat says, <em>“you have measured the land. Now measure the sky.”</em></p><p>The mystery has only begun.</p>'); save(); }
+      else dialog('The Star-Well','<p>The stair still descends. Whatever waits below remembers Jacques La Ramée — and it is waiting for the rest of the survey.</p>');
       break;
     case'npc':
       dialog(o.name||'Someone', `<p>${NPC[o.id][Math.floor(Math.random()*NPC[o.id].length)]}</p>`); break;
-    case'sign': dialog(o.label||'Sign',`<p>Weathered wood reads: “${o.label}.” The wind carries a train that has not yet arrived.</p>`); break;
-    case'build': dialog(o.label,`<p>Coal smoke, wet canvas, fresh timber. Locked for the night.</p>`); break;
-    case'rock': dialog('Strange Stone','<p>Blue mineral threads the rock. Your compass needle points straight down. You mark it in the field book.</p>'); note('A dark rock near camp bends the compass downward.'); break;
+    case'sign': dialog(o.label||'Sign',`<p>Weathered wood reads: “${o.label}.” The wind carries the sound of a train that has not yet arrived, and something older beneath it.</p>`); break;
+    case'build': dialog(o.label,`<p>Coal smoke, wet canvas, fresh timber. Locked for the night. The storm will keep everyone inside.</p>`); break;
+    case'rock': dialog('Strange Stone','<p>Blue mineral threads the rock. Your compass needle points straight down. You mark it carefully in the field book.</p>'); note('A dark rock near camp bends the compass. The mineral is not on any of the Union Pacific charts.'); break;
     case'chest': openChest(o); break;
     case'shrine':
-      if(!(S.stakeA&&S.stakeB)) dialog('Wind Shrine','<p>A stone marker in a ring of wind-carved rocks. It waits for a surveyor who can read the land.</p>');
-      else if(!S.hasMap){ S.hasMap=true; SFX.success(); note('The shrine grants map and compass. Canyon trails appear.'); dialog('Wind Shrine','<p>Stakes align with the ridge. A hidden compartment opens: an old map and compass. The path to La Ramée Canyon is clear.</p>'); save(); }
-      else toast('The shrine is quiet.'); break;
+      if(!(S.stakeA&&S.stakeB)) dialog('Wind Shrine','<p>A stone marker in a ring of wind-carved rocks. It waits for a surveyor who can read the land and the sky.</p>');
+      else if(!S.hasMap){ S.hasMap=true; SFX.success(); note('The shrine grants map and compass. The old survey lines reveal the path into La Ramée Canyon.'); dialog('Wind Shrine','<p>The stakes align with the ridge. A hidden compartment opens: an old map and a compass that does not point north.</p><p>Canyon trails are now clear.</p>'); save(); }
+      else toast('The shrine is quiet. The map is yours.'); break;
     case'cave':
-      if(!S.hasKey) dialog('Sealed Door','<p>Brass lock, not iron. You need a key.</p>');
-      else if(!S.flags.door){ S.flags.door=true; SFX.portal(); SFX.success(); note('The Understar Door opened with a sound like a bell.'); dialog('Understar Door','<p>The key turns. Beyond, a stair descends toward an impossible sky. The survey continues beneath the plains.</p>'); save(); }
-      else dialog('Understar Door','<p>The passage remains open.</p>'); break;
-    case'fire': toast('Warmth against the high-plains wind.'); burst(o.x*T+16,o.y*T+10,6,'#ff8844'); break;
-    case'tent': toast('Canvas snaps in the breeze.'); break;
+      if(!S.hasKey) dialog('Sealed Door','<p>A brass lock, not iron. The metal is warm. You need a key that matches the survey.</p>');
+      else if(!S.flags.door){ S.flags.door=true; SFX.portal(); SFX.success(); note('The Understar Door opened with a sound like a bell struck underground.'); dialog('Understar Door','<p>The key turns. Beyond, a stair descends toward an impossible sky — stars where no sky should be.</p><p>The survey continues beneath the plains. La Ramée’s last measurement is still unfinished.</p>'); save(); }
+      else dialog('Understar Door','<p>The passage remains open. The stars below do not move with the night.</p>'); break;
+    case'fire': toast('Warmth against the high-plains wind and the coming storm.'); burst(o.x*T+16,o.y*T+10,6,'#ff8844'); break;
+    case'tent': toast('Canvas snaps in the rising wind.'); break;
     default: toast('Interesting, but nothing more.');
   }
 }
@@ -460,30 +522,30 @@ function openChest(o){
   let msg='You open the chest… ';
   if(o.item==='potion'){ S.hp=Math.min(S.maxHp,S.hp+2); msg+='a healing draught.'; }
   else if(o.item==='coins'){ const n=12+Math.floor(Math.random()*10); S.coins+=n; msg+=`a purse (+${n} coins).`; }
-  else if(o.item==='hammer'){ S.hasHammer=true; msg+='a heavy survey hammer! Tool now attacks.'; note('Survey hammer recovered at the railhead.'); }
-  else if(o.item==='key'){ S.hasKey=true; msg+='a heavy brass key.'; note('Brass key found on the ridge.'); }
+  else if(o.item==='hammer'){ S.hasHammer=true; msg+='a heavy survey hammer! Tool now attacks.'; note('Survey hammer recovered at the railhead. The weight feels right in the hand.'); }
+  else if(o.item==='key'){ S.hasKey=true; msg+='a heavy brass key, still warm.'; note('Brass key found on the ridge. It matches no lock in camp.'); }
   else { S.coins+=5; msg+='a few coins.'; }
   toast(msg); save();
 }
 function useTool(){
   if(S.atk>0||!S.started) return;
-  S.atk=0.38; resume();
+  S.atk=0.35; resume();
   if(S.hasHammer){
     SFX.swing();
     let ax=S.x, ay=S.y;
-    if(S.dir==='right') ax+=0.95; else if(S.dir==='left') ax-=0.95;
-    else if(S.dir==='down') ay+=0.95; else ay-=0.95;
+    if(S.dir==='right') ax+=1; else if(S.dir==='left') ax-=1;
+    else if(S.dir==='down') ay+=1; else ay-=1;
     burst(ax*T+16,ay*T+16,7,'#e8e0d0');
     for(const o of Z().objs){
-      if(o.k==='enemy'&&alive(o)&&Math.hypot(ax-(o.x+0.5),ay-(o.y+0.5))<1.15){
-        o.hp=(o.hp||1)-1; SFX.hurt(); shake=4; burst(o.x*T+16,o.y*T+16,9,'#e07060');
+      if(o.k==='enemy'&&alive(o)&&Math.hypot(ax-(o.x+0.5),ay-(o.y+0.5))<1.2){
+        o.hp=(o.hp||1)-1; SFX.hurt(); shake=5; burst(o.x*T+16,o.y*T+16,9,'#e07060');
         if(o.hp<=0){ toast('Defeated!'); S.coins+=3; save(); }
       }
     }
   } else { SFX.interact(); toast('You swing the survey chain. Not yet a weapon.'); }
 }
 
-// ---------- Drawing (richer procedural) ----------
+// ---------- Drawing ----------
 function drawTile(tx,ty,ch,biome){
   const px=tx*T-camX, py=ty*T-camY;
   if(px<-T||py<-T||px>W||py>H) return;
@@ -497,91 +559,93 @@ function drawTile(tx,ty,ch,biome){
   else if(biome==='ridge'){ base=(tx+ty)%2? '#4e4638':'#5a5040'; detail='#6a6050'; }
   else { base=(tx+ty)%2? '#5e4232':'#6a4a38'; detail='#7a5a48'; }
   ctx.fillStyle=base; ctx.fillRect(px,py,T,T);
+  // Animated grass / detail
   ctx.fillStyle=detail;
+  const sway = Math.sin(time*2.2 + tx*0.7 + ty)*1.5;
   if(biome==='prairie'||biome==='town'){
-    for(let i=0;i<3;i++){ const gx=px+5+(i*8+tx*3)%22, gy=py+9+(i*6+ty*2)%18; ctx.fillRect(gx,gy,2,3); }
-  } else { ctx.fillRect(px+7,py+11,4,2); ctx.fillRect(px+17,py+19,5,2); }
-  ctx.fillStyle='rgba(0,0,0,0.13)'; ctx.fillRect(px,py+T-3,T,3);
+    for(let i=0;i<3;i++){ const gx=px+6+(i*9+tx*3)%24 + sway, gy=py+10+(i*7+ty*2)%20; ctx.fillRect(gx,gy,2,4); }
+  } else { ctx.fillRect(px+8,py+12,5,2); ctx.fillRect(px+20,py+22,6,2); }
+  ctx.fillStyle='rgba(0,0,0,0.14)'; ctx.fillRect(px,py+T-3,T,3);
 }
 
 function drawObj(o,t){
   if(!alive(o)) return;
   const px=o.x*T-camX, py=o.y*T-camY;
-  if(px<-40||py<-40||px>W+20||py>H+20) return;
-  const bob=Math.sin(t*2.8+o.x)*1.4;
+  if(px<-50||py<-50||px>W+30||py>H+30) return;
+  const bob=Math.sin(t*2.8+o.x)*1.6;
   switch(o.k){
     case'stake':{
       const got=(o.id==='A'&&S.stakeA)||(o.id==='B'&&S.stakeB);
-      ctx.fillStyle=got?'#4a5a4a':'#c9a227'; ctx.fillRect(px+14,py+8+bob,4,20);
-      ctx.fillStyle='#e8d080'; ctx.fillRect(px+12,py+6+bob,8,5);
-      if(!got){ ctx.fillStyle=`rgba(224,180,92,${0.3+Math.sin(t*4)*0.15})`; ctx.beginPath(); ctx.arc(px+16,py+12+bob,9,0,Math.PI*2); ctx.fill(); }
+      ctx.fillStyle=got?'#4a5a4a':'#c9a227'; ctx.fillRect(px+16,py+10+bob,5,24);
+      ctx.fillStyle='#e8d080'; ctx.fillRect(px+13,py+7+bob,11,6);
+      if(!got){ ctx.fillStyle=`rgba(224,180,92,${0.32+Math.sin(t*4)*0.16})`; ctx.beginPath(); ctx.arc(px+18,py+14+bob,11,0,Math.PI*2); ctx.fill(); }
       break;
     }
     case'well':{
-      ctx.fillStyle='#3a3a42'; ctx.beginPath(); ctx.ellipse(px+16,py+22,14,6,0,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#2a2a32'; ctx.beginPath(); ctx.ellipse(px+16,py+20,10,4,0,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='#5a5a6a'; ctx.lineWidth=2; ctx.beginPath(); ctx.ellipse(px+16,py+18,12,5,0,0,Math.PI*2); ctx.stroke();
-      if(S.stakeA&&S.stakeB){ ctx.fillStyle=`rgba(100,180,255,${0.12+Math.sin(t*2)*0.08})`; ctx.beginPath(); ctx.ellipse(px+16,py+16,8,3,0,0,Math.PI*2); ctx.fill(); }
+      ctx.fillStyle='#3a3a42'; ctx.beginPath(); ctx.ellipse(px+20,py+26,16,7,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#2a2a32'; ctx.beginPath(); ctx.ellipse(px+20,py+24,12,5,0,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#5a5a6a'; ctx.lineWidth=2; ctx.beginPath(); ctx.ellipse(px+20,py+22,14,6,0,0,Math.PI*2); ctx.stroke();
+      if(S.stakeA&&S.stakeB){ ctx.fillStyle=`rgba(100,180,255,${0.14+Math.sin(t*2)*0.09})`; ctx.beginPath(); ctx.ellipse(px+20,py+20,10,4,0,0,Math.PI*2); ctx.fill(); }
       break;
     }
     case'npc':{
-      ctx.fillStyle='#2a3a4a'; ctx.fillRect(px+11,py+14,10,12);
-      ctx.fillStyle='#e0c8a0'; ctx.beginPath(); ctx.arc(px+16,py+10,6,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#3d5a4a'; ctx.fillRect(px+9,py+15,4,8); ctx.fillRect(px+19,py+15,4,8);
+      ctx.fillStyle='#2a3a4a'; ctx.fillRect(px+13,py+16,12,14);
+      ctx.fillStyle='#e0c8a0'; ctx.beginPath(); ctx.arc(px+19,py+12,7,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#3d5a4a'; ctx.fillRect(px+10,py+17,5,9); ctx.fillRect(px+23,py+17,5,9);
       break;
     }
     case'chest':{
-      ctx.fillStyle='#6a4a28'; ctx.fillRect(px+6,py+12,20,14);
-      ctx.fillStyle='#8a6a38'; ctx.fillRect(px+6,py+12,20,5);
-      ctx.fillStyle='#e0b45c'; ctx.fillRect(px+14,py+16,4,6);
+      ctx.fillStyle='#6a4a28'; ctx.fillRect(px+8,py+14,24,16);
+      ctx.fillStyle='#8a6a38'; ctx.fillRect(px+8,py+14,24,6);
+      ctx.fillStyle='#e0b45c'; ctx.fillRect(px+17,py+18,5,7);
       break;
     }
     case'sign':{
-      ctx.fillStyle='#5a4030'; ctx.fillRect(px+14,py+10,4,18);
-      ctx.fillStyle='#8a6a40'; ctx.fillRect(px+6,py+6,20,10);
+      ctx.fillStyle='#5a4030'; ctx.fillRect(px+16,py+12,5,22);
+      ctx.fillStyle='#8a6a40'; ctx.fillRect(px+7,py+7,24,12);
       break;
     }
     case'build':{
-      ctx.fillStyle='#4a3a2a'; ctx.fillRect(px+2,py+8,28,22);
-      ctx.fillStyle='#3a2a1a'; ctx.beginPath(); ctx.moveTo(px,py+10); ctx.lineTo(px+16,py+2); ctx.lineTo(px+32,py+10); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#1a2030'; ctx.fillRect(px+12,py+18,8,12);
+      ctx.fillStyle='#4a3a2a'; ctx.fillRect(px+2,py+10,36,26);
+      ctx.fillStyle='#3a2a1a'; ctx.beginPath(); ctx.moveTo(px,py+12); ctx.lineTo(px+20,py+2); ctx.lineTo(px+40,py+12); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#1a2030'; ctx.fillRect(px+15,py+22,10,14);
       break;
     }
     case'rock':{
-      ctx.fillStyle='#4a4a58'; ctx.beginPath(); ctx.moveTo(px+6,py+24); ctx.lineTo(px+10,py+10); ctx.lineTo(px+22,py+8); ctx.lineTo(px+26,py+22); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#3a6a9a'; ctx.fillRect(px+14,py+14,4,4);
+      ctx.fillStyle='#4a4a58'; ctx.beginPath(); ctx.moveTo(px+6,py+28); ctx.lineTo(px+12,py+12); ctx.lineTo(px+28,py+10); ctx.lineTo(px+32,py+26); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#3a6a9a'; ctx.fillRect(px+16,py+16,5,5);
       break;
     }
     case'enemy':{
-      const fl=S.invuln>0&&Math.floor(t*10)%2?0.45:1;
+      const fl=S.invuln>0&&Math.floor(t*10)%2?0.4:1;
       ctx.globalAlpha=fl;
       ctx.fillStyle=o.id.startsWith('coy')?'#8a6a40':'#5a3a3a';
-      ctx.fillRect(px+8,py+12,16,14);
-      ctx.fillStyle='#2a1a1a'; ctx.beginPath(); ctx.arc(px+16,py+10,7,0,Math.PI*2); ctx.fill();
+      ctx.fillRect(px+10,py+14,20,16);
+      ctx.fillStyle='#2a1a1a'; ctx.beginPath(); ctx.arc(px+20,py+12,8,0,Math.PI*2); ctx.fill();
       ctx.globalAlpha=1; break;
     }
     case'shrine':{
-      ctx.fillStyle='#5a5a6a'; ctx.fillRect(px+10,py+6,12,22);
-      ctx.fillStyle='#7a7a8a'; ctx.fillRect(px+6,py+4,20,6);
-      ctx.fillStyle=`rgba(180,200,255,${0.25+Math.sin(t*2)*0.12})`; ctx.beginPath(); ctx.arc(px+16,py+8,6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#5a5a6a'; ctx.fillRect(px+12,py+8,16,26);
+      ctx.fillStyle='#7a7a8a'; ctx.fillRect(px+7,py+5,26,7);
+      ctx.fillStyle=`rgba(180,200,255,${0.28+Math.sin(t*2)*0.14})`; ctx.beginPath(); ctx.arc(px+20,py+10,7,0,Math.PI*2); ctx.fill();
       break;
     }
     case'cave':{
-      ctx.fillStyle='#1a1a22'; ctx.beginPath(); ctx.moveTo(px+4,py+28); ctx.quadraticCurveTo(px+16,py+4,px+28,py+28); ctx.closePath(); ctx.fill();
-      if(S.flags.door){ ctx.fillStyle='#2a3a5a'; ctx.fillRect(px+10,py+12,12,16); }
+      ctx.fillStyle='#1a1a22'; ctx.beginPath(); ctx.moveTo(px+4,py+34); ctx.quadraticCurveTo(px+20,py+4,px+36,py+34); ctx.closePath(); ctx.fill();
+      if(S.flags.door){ ctx.fillStyle='#2a3a5a'; ctx.fillRect(px+12,py+14,16,20); }
       break;
     }
     case'fire':{
-      ctx.fillStyle='#4a3020'; ctx.fillRect(px+10,py+20,12,4);
+      ctx.fillStyle='#4a3020'; ctx.fillRect(px+12,py+24,16,5);
       const fl=0.65+Math.sin(t*11)*0.35;
-      ctx.fillStyle=`rgba(255,140,40,${fl})`; ctx.beginPath(); ctx.moveTo(px+16,py+8); ctx.lineTo(px+10,py+20); ctx.lineTo(px+22,py+20); ctx.closePath(); ctx.fill();
-      ctx.fillStyle=`rgba(255,220,80,${fl})`; ctx.beginPath(); ctx.moveTo(px+16,py+12); ctx.lineTo(px+13,py+20); ctx.lineTo(px+19,py+20); ctx.closePath(); ctx.fill();
-      if(Math.random()<0.25) spawn(px+16,py+10,{c:'#ff8844',vy:-28,life:0.45});
+      ctx.fillStyle=`rgba(255,140,40,${fl})`; ctx.beginPath(); ctx.moveTo(px+20,py+8); ctx.lineTo(px+12,py+24); ctx.lineTo(px+28,py+24); ctx.closePath(); ctx.fill();
+      ctx.fillStyle=`rgba(255,220,80,${fl})`; ctx.beginPath(); ctx.moveTo(px+20,py+12); ctx.lineTo(px+15,py+24); ctx.lineTo(px+25,py+24); ctx.closePath(); ctx.fill();
+      if(Math.random()<0.3) spawn(px+20,py+10,{c:'#ff8844',vy:-32,life:0.4});
       break;
     }
     case'tent':{
-      ctx.fillStyle='#6a5a40'; ctx.beginPath(); ctx.moveTo(px+4,py+26); ctx.lineTo(px+16,py+6); ctx.lineTo(px+28,py+26); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#4a3a28'; ctx.fillRect(px+14,py+16,4,10);
+      ctx.fillStyle='#6a5a40'; ctx.beginPath(); ctx.moveTo(px+4,py+30); ctx.lineTo(px+20,py+6); ctx.lineTo(px+36,py+30); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#4a3a28'; ctx.fillRect(px+17,py+18,6,12);
       break;
     }
   }
@@ -589,21 +653,25 @@ function drawObj(o,t){
 
 function drawPlayer(t){
   const px=S.x*T-camX, py=S.y*T-camY;
-  const walk=Math.sin(S.anim)*2;
-  ctx.fillStyle='rgba(0,0,0,0.28)'; ctx.beginPath(); ctx.ellipse(px+16,py+30,10,4,0,0,Math.PI*2); ctx.fill();
+  const walk=Math.sin(S.anim)*2.2;
+  ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(px+20,py+36,12,5,0,0,Math.PI*2); ctx.fill();
   if(S.invuln>0&&Math.floor(t*12)%2===0) ctx.globalAlpha=0.4;
-  ctx.fillStyle='#2a4a6a'; ctx.fillRect(px+10,py+14+walk*0.3,12,14);
-  ctx.fillStyle='#e0c8a0'; ctx.beginPath(); ctx.arc(px+16,py+10+walk*0.2,7,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#3a2a1a'; ctx.fillRect(px+8,py+4+walk*0.2,16,4); ctx.fillRect(px+11,py+1+walk*0.2,10,4);
+  ctx.fillStyle='#2a4a6a'; ctx.fillRect(px+12,py+16+walk*0.3,16,16);
+  ctx.fillStyle='#e0c8a0'; ctx.beginPath(); ctx.arc(px+20,py+12+walk*0.2,8,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#3a2a1a'; ctx.fillRect(px+9,py+4+walk*0.2,22,5); ctx.fillRect(px+13,py+1+walk*0.2,14,5);
   ctx.fillStyle='#2a2a3a';
-  const leg=Math.sin(S.anim)*3;
-  ctx.fillRect(px+11,py+26,4,6+(S.dir==='down'||S.dir==='up'?leg:0));
-  ctx.fillRect(px+17,py+26,4,6-(S.dir==='down'||S.dir==='up'?leg:0));
+  const leg=Math.sin(S.anim)*3.5;
+  ctx.fillRect(px+13,py+30,5,7+(S.dir==='down'||S.dir==='up'?leg:0));
+  ctx.fillRect(px+22,py+30,5,7-(S.dir==='down'||S.dir==='up'?leg:0));
   if(S.hasHammer){
     ctx.fillStyle='#c0c0d0';
-    if(S.dir==='right'){ ctx.fillRect(px+22,py+16,12,3); ctx.fillStyle='#8a6a30'; ctx.fillRect(px+20,py+14,4,7); }
-    else if(S.dir==='left'){ ctx.fillRect(px-2,py+16,12,3); ctx.fillStyle='#8a6a30'; ctx.fillRect(px+8,py+14,4,7); }
-    else ctx.fillRect(px+14,py+8,3,10);
+    if(S.dir==='right'){ ctx.fillRect(px+28,py+18,14,4); ctx.fillStyle='#8a6a30'; ctx.fillRect(px+25,py+16,5,8); }
+    else if(S.dir==='left'){ ctx.fillRect(px-2,py+18,14,4); ctx.fillStyle='#8a6a30'; ctx.fillRect(px+10,py+16,5,8); }
+    else ctx.fillRect(px+17,py+8,4,12);
+  }
+  // Sprint dust
+  if(S.sprint && (keys.ArrowUp||keys.w||keys.ArrowDown||keys.s||keys.ArrowLeft||keys.a||keys.ArrowRight||keys.d||touch.up||touch.down||touch.left||touch.right)){
+    if(Math.random()<0.4) spawn(px+20,py+36,{c:'#b0a070',s:2,life:0.25,vy:-10});
   }
   ctx.globalAlpha=1;
 }
@@ -611,29 +679,28 @@ function drawPlayer(t){
 function draw(){
   const t=performance.now()/1000;
   time=t;
-  // camera
-  const tx=S.x*T-W/2+16, ty=S.y*T-H/2+16;
-  camX+=(tx-camX)*0.13; camY+=(ty-camY)*0.13;
+  const tx=S.x*T-W/2+20, ty=S.y*T-H/2+20;
+  camX+=(tx-camX)*0.14; camY+=(ty-camY)*0.14;
   camX=Math.max(0,Math.min(COLS*T-W,camX)); camY=Math.max(0,Math.min(ROWS*T-H,camY));
-  if(shake>0){ camX+=(Math.random()-0.5)*shake; camY+=(Math.random()-0.5)*shake; shake*=0.85; }
+  if(shake>0){ camX+=(Math.random()-0.5)*shake; camY+=(Math.random()-0.5)*shake; shake*=0.82; }
 
   ctx.fillStyle='#1a2a1c'; ctx.fillRect(0,0,W,H);
   const z=Z();
   for(let ty=0;ty<ROWS;ty++) for(let tx=0;tx<COLS;tx++) drawTile(tx,ty,z.tiles[ty][tx],z.biome);
 
-  // exit markers – larger, pulsing, labeled
+  // exit markers
   for(const L of z.links){
     const px=L.x*T-camX, py=L.y*T-camY;
     const pulse = 0.55 + Math.sin(t*3.2)*0.3;
     ctx.strokeStyle=`rgba(224,180,92,${pulse})`; ctx.lineWidth=3;
-    ctx.strokeRect(px+1,py+1,T-2,T-2);
-    ctx.fillStyle=`rgba(224,180,92,${0.18+Math.sin(t*3)*0.08})`;
-    ctx.fillRect(px+1,py+1,T-2,T-2);
+    ctx.strokeRect(px+2,py+2,T-4,T-4);
+    ctx.fillStyle=`rgba(224,180,92,${0.16+Math.sin(t*3)*0.08})`;
+    ctx.fillRect(px+2,py+2,T-4,T-4);
     if(L.label){
       ctx.fillStyle='#e0b45c';
-      ctx.font='bold 10px system-ui';
+      ctx.font='bold 11px system-ui';
       ctx.textAlign='center';
-      ctx.fillText(L.label, px+T/2, py-4);
+      ctx.fillText(L.label, px+T/2, py-5);
     }
   }
 
@@ -646,14 +713,30 @@ function draw(){
     ctx.globalAlpha=Math.max(0,p.life/p.max);
     ctx.fillStyle=p.c; ctx.fillRect(p.x-camX,p.y-camY,p.s,p.s);
   }
+  // rain
+  ctx.globalAlpha=0.45;
+  ctx.strokeStyle='#a0c0e0';
+  ctx.lineWidth=1;
+  for(const r of rain){
+    ctx.beginPath();
+    ctx.moveTo(r.x, r.y);
+    ctx.lineTo(r.x-2, r.y+12);
+    ctx.stroke();
+  }
   ctx.globalAlpha=1;
 
+  // Lightning flash overlay
+  if(lightning > 0){
+    ctx.fillStyle=`rgba(200,220,255,${lightning*0.35})`;
+    ctx.fillRect(0,0,W,H);
+  }
+
   // top bar
-  ctx.fillStyle='rgba(8,12,18,0.55)'; ctx.fillRect(0,0,W,26);
-  ctx.fillStyle='#e0b45c'; ctx.font='12px system-ui'; ctx.textAlign='left';
-  ctx.fillText(z.name.toUpperCase(),12,17);
+  ctx.fillStyle='rgba(8,12,18,0.55)'; ctx.fillRect(0,0,W,28);
+  ctx.fillStyle='#e0b45c'; ctx.font='13px system-ui'; ctx.textAlign='left';
+  ctx.fillText(z.name.toUpperCase(),14,19);
   ctx.textAlign='right'; ctx.fillStyle='#c8b070';
-  ctx.fillText(S.stakeA&&S.stakeB?'STAKES SECURED':'FIELDWORK',W-12,17);
+  ctx.fillText(S.stakeA&&S.stakeB?'STAKES SECURED':'FIELDWORK',W-14,19);
 }
 
 function updateHud(){
@@ -661,11 +744,11 @@ function updateHud(){
   $('coins').textContent='◇ '+S.coins;
   $('toolLabel').textContent=S.hasHammer?'Survey hammer':'Survey chain';
   let obj='Find the brass survey stakes near camp';
-  if(S.stakeA&&S.stakeB&&!S.heardWell) obj='Investigate the old well';
+  if(S.stakeA&&S.stakeB&&!S.heardWell) obj='Investigate the old well — the storm is rising';
   else if(S.heardWell&&!S.hasMap) obj='Seek the Wind Shrine on the ridge';
   else if(S.hasMap&&!S.hasKey) obj='Find the brass key';
   else if(S.hasKey&&!S.flags.door) obj='Open the Understar Door';
-  else if(S.flags.door) obj='The survey continues beneath…';
+  else if(S.flags.door) obj='The survey continues beneath the stars…';
   $('objective').textContent=obj;
 }
 
@@ -673,12 +756,15 @@ function updateHud(){
 $('startBtn').onclick=()=>{
   S.started=true; $('title').classList.add('hidden');
   resume(); startAmbient(); startMusic(); SFX.collect();
-  if(!S.notes.length) note('1867: You arrive on the Laramie Plains with a brass survey chain and a blank field book.');
-  toast('Find the survey stakes. Gold frames mark exits.');
+  if(!S.notes.length) note('1867: You arrive on the Laramie Plains with a brass survey chain and a blank field book. The storm line sits on the Medicine Bows.');
+  toast('Find the survey stakes. Gold frames mark exits. Hold Shift to sprint.');
   updateHud(); save();
 };
 $('interactBtn').onclick=()=>{ resume(); interact(); };
 $('toolBtn').onclick=()=>{ resume(); useTool(); };
+$('sprintBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); touch.sprint=true; resume(); });
+$('sprintBtn').addEventListener('pointerup',()=>touch.sprint=false);
+$('sprintBtn').addEventListener('pointercancel',()=>touch.sprint=false);
 $('journalBtn').onclick=()=>{
   SFX.ui();
   const n=S.notes.length? '<ul>'+S.notes.map(x=>`<li>${x}</li>`).join('')+'</ul>':'<p>Field book still blank.</p>';
@@ -686,7 +772,7 @@ $('journalBtn').onclick=()=>{
 };
 $('mapBtn').onclick=()=>{
   SFX.ui();
-  dialog('Survey Map',`<p><b>Current:</b> ${Z().name}</p><p>Zones: Camp → Town → Railhead → Ridge → Canyon</p><p>${S.hasMap?'Canyon trails unlocked.':'Map incomplete — seek the Wind Shrine.'}</p>`);
+  dialog('Survey Map',`<p><b>Current:</b> ${Z().name}</p><p>Zones: Camp → Town → Railhead → Ridge → Canyon</p><p>${S.hasMap?'Canyon trails unlocked.':'Map incomplete — seek the Wind Shrine.'}</p><p>The storm is moving in from the west.</p>`);
 };
 $('bagBtn').onclick=()=>{
   SFX.ui();
@@ -700,10 +786,12 @@ $('bagBtn').onclick=()=>{
 };
 $('helpBtn').onclick=()=>{
   dialog('How to Play',`<p>Explore 1867 Laramie Plains. Recover the survey stakes, unlock the Star-Well, and discover what lies beneath.</p>
-  <ul><li><b>Move</b> WASD / Arrows / D-pad</li><li><b>Interact</b> Space / Enter / button</li>
+  <ul><li><b>Move</b> WASD / Arrows / D-pad</li>
+  <li><b>Sprint</b> Hold Shift or the Sprint button (+45% speed)</li>
+  <li><b>Interact</b> Space / Enter / button</li>
   <li><b>Tool</b> X / button (attacks once you have the hammer)</li>
   <li>Walk into gold-framed openings to change areas</li></ul>
-  <p>Enemies chase. Face them and strike. Chests hold gear.</p>`);
+  <p>Lightning, rain, and the storm are part of the atmosphere. Enemies chase. Face them and strike.</p>`);
 };
 $('resetBtn').onclick=()=>{
   dialog('New Survey?',`<p>Erase the save and start over at camp?</p><button id="doReset">Start over</button>`);
@@ -741,8 +829,9 @@ function frame(t){
   S.invuln=Math.max(0,S.invuln-dt); S.atk=Math.max(0,S.atk-dt); S.interactCd=Math.max(0,S.interactCd-dt);
   if(S.started){
     move(dt);
+    updateStorm(dt);
     particles=particles.filter(p=>p.life>0);
-    particles.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; p.vy+=45*dt; });
+    particles.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; p.vy+=50*dt; });
   }
   draw();
   updateHud();
