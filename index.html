@@ -233,7 +233,11 @@ const zones = {
       {x:5,y:4,k:'fire'},
       {x:14,y:9,k:'tent'}
     ],
-    links:[{x:19,y:6,to:'town',tx:1,ty:6,label:'TOWN'},{x:10,y:1,to:'ridge',tx:10,ty:10,label:'RIDGE'}]
+    // Markers on border; arrival points safely inland so no instant bounce-back
+    links:[
+      {x:19, y:6, to:'town',  tx:2.5, ty:6,   label:'TOWN'},
+      {x:10, y:0, to:'ridge', tx:10,  ty:9.5, label:'RIDGE'}
+    ]
   },
   town: {
     name:'Laramie Tent Town', biome:'town',
@@ -246,7 +250,10 @@ const zones = {
       {x:16,y:9,k:'chest',id:'c2',item:'coins'},
       {x:3,y:9,k:'sign',label:'Notice Board'}
     ],
-    links:[{x:0,y:6,to:'camp',tx:18,ty:6,label:'CAMP'},{x:19,y:6,to:'rail',tx:1,ty:6,label:'RAILHEAD'}]
+    links:[
+      {x:0,  y:6, to:'camp', tx:17.5, ty:6,   label:'CAMP'},
+      {x:19, y:6, to:'rail', tx:2.5,  ty:6,   label:'RAILHEAD'}
+    ]
   },
   rail: {
     name:'End of the Rails', biome:'town',
@@ -258,7 +265,10 @@ const zones = {
       {x:16,y:4,k:'chest',id:'c3',item:'hammer'},
       {x:11,y:2,k:'sign',label:'Tracks end'}
     ],
-    links:[{x:0,y:6,to:'town',tx:18,ty:6,label:'TOWN'},{x:10,y:11,to:'ridge',tx:15,ty:1,label:'RIDGE'}]
+    links:[
+      {x:0,  y:6,  to:'town',  tx:17.5, ty:6,   label:'TOWN'},
+      {x:10, y:11, to:'ridge', tx:10,   ty:2.5, label:'RIDGE'}
+    ]
   },
   ridge: {
     name:'Medicine Bow Ridge', biome:'ridge',
@@ -270,7 +280,11 @@ const zones = {
       {x:8,y:2,k:'chest',id:'c4',item:'key'},
       {x:16,y:9,k:'sign',label:'Canyon ahead'}
     ],
-    links:[{x:10,y:11,to:'camp',tx:10,ty:2,label:'CAMP'},{x:15,y:0,to:'rail',tx:10,ty:10,label:'RAIL'},{x:0,y:6,to:'canyon',tx:18,ty:6,label:'CANYON'}]
+    links:[
+      {x:10, y:11, to:'camp',   tx:10,   ty:2.5, label:'CAMP'},
+      {x:10, y:0,  to:'rail',   tx:10,   ty:9.5, label:'RAIL'},
+      {x:0,  y:6,  to:'canyon', tx:17.5, ty:6,   label:'CANYON'}
+    ]
   },
   canyon: {
     name:'La Ramée Canyon', biome:'canyon',
@@ -281,7 +295,9 @@ const zones = {
       {x:14,y:3,k:'chest',id:'c5',item:'coins'},
       {x:4,y:4,k:'sign',label:'Understar Gate'}
     ],
-    links:[{x:19,y:6,to:'ridge',tx:1,ty:6,label:'RIDGE'}]
+    links:[
+      {x:19, y:6, to:'ridge', tx:2.5, ty:6, label:'RIDGE'}
+    ]
   }
 };
 function makeGrid(base){
@@ -332,29 +348,25 @@ let exitCd = 0; // prevents double-triggers
 function tryExit(){
   if(exitCd > 0) return;
   const z = Z();
-  // Edge-based detection – far more reliable than point-on-tile
+  // Strict edge detection – only fire when actually at the border
   for(const L of z.links){
     let hit = false;
-    // Right edge exit
-    if(L.x >= COLS-2 && S.x > COLS-1.4 && Math.abs(S.y - L.y) < 1.4) hit = true;
-    // Left edge exit
-    else if(L.x <= 1 && S.x < 1.4 && Math.abs(S.y - L.y) < 1.4) hit = true;
-    // Top edge exit
-    else if(L.y <= 1 && S.y < 1.4 && Math.abs(S.x - L.x) < 1.4) hit = true;
-    // Bottom edge exit
-    else if(L.y >= ROWS-2 && S.y > ROWS-1.4 && Math.abs(S.x - L.x) < 1.4) hit = true;
-    // Fallback: close to the marker itself
-    else if(Math.abs(S.x - L.x) < 0.9 && Math.abs(S.y - L.y) < 0.9) hit = true;
+    // Right edge
+    if(L.x >= COLS-2 && S.x > COLS-1.55 && Math.abs(S.y - L.y) < 1.6) hit = true;
+    // Left edge
+    else if(L.x <= 1 && S.x < 1.45 && Math.abs(S.y - L.y) < 1.6) hit = true;
+    // Top edge
+    else if(L.y <= 1 && S.y < 1.45 && Math.abs(S.x - L.x) < 1.6) hit = true;
+    // Bottom edge
+    else if(L.y >= ROWS-2 && S.y > ROWS-1.55 && Math.abs(S.x - L.x) < 1.6) hit = true;
 
     if(hit){
-      exitCd = 0.7;
+      exitCd = 1.1;           // longer lockout prevents bounce-back
       SFX.portal();
       S.zone = L.to;
-      S.x = L.tx + 0.5;
-      S.y = L.ty + 0.5;
-      // Keep player safely inside new zone
-      S.x = Math.max(1.2, Math.min(COLS-1.5, S.x));
-      S.y = Math.max(1.2, Math.min(ROWS-1.5, S.y));
+      // Land exactly where we intend (already inland)
+      S.x = L.tx;
+      S.y = L.ty;
       toast('Trail open: ' + zones[S.zone].name);
       save();
       burst(S.x*T, S.y*T, 8, '#e0b45c');
