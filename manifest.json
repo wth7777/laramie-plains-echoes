@@ -1,0 +1,10 @@
+{
+  "name": "Laramie Plains: Echoes of the Survey",
+  "short_name": "Laramie Plains",
+  "description": "A frontier action-adventure set on the Laramie Plains, 1867.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c1018",
+  "theme_color": "#0c1018",
+  "orientation": "any"
+}
