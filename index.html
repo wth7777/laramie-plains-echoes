@@ -328,8 +328,44 @@ function solid(tx,ty){
   if(tx<0||ty<0||tx>=COLS||ty>=ROWS) return true;
   return Z().tiles[ty][tx]==='#';
 }
+let exitCd = 0; // prevents double-triggers
+function tryExit(){
+  if(exitCd > 0) return;
+  const z = Z();
+  // Edge-based detection – far more reliable than point-on-tile
+  for(const L of z.links){
+    let hit = false;
+    // Right edge exit
+    if(L.x >= COLS-2 && S.x > COLS-1.4 && Math.abs(S.y - L.y) < 1.4) hit = true;
+    // Left edge exit
+    else if(L.x <= 1 && S.x < 1.4 && Math.abs(S.y - L.y) < 1.4) hit = true;
+    // Top edge exit
+    else if(L.y <= 1 && S.y < 1.4 && Math.abs(S.x - L.x) < 1.4) hit = true;
+    // Bottom edge exit
+    else if(L.y >= ROWS-2 && S.y > ROWS-1.4 && Math.abs(S.x - L.x) < 1.4) hit = true;
+    // Fallback: close to the marker itself
+    else if(Math.abs(S.x - L.x) < 0.9 && Math.abs(S.y - L.y) < 0.9) hit = true;
+
+    if(hit){
+      exitCd = 0.7;
+      SFX.portal();
+      S.zone = L.to;
+      S.x = L.tx + 0.5;
+      S.y = L.ty + 0.5;
+      // Keep player safely inside new zone
+      S.x = Math.max(1.2, Math.min(COLS-1.5, S.x));
+      S.y = Math.max(1.2, Math.min(ROWS-1.5, S.y));
+      toast('Trail open: ' + zones[S.zone].name);
+      save();
+      burst(S.x*T, S.y*T, 8, '#e0b45c');
+      return;
+    }
+  }
+}
+
 function move(dt){
-  let dx=0,dy=0;
+  exitCd = Math.max(0, exitCd - dt);
+  let dx=0, dy=0;
   if(keys.ArrowUp||keys.w||touch.up) dy-=1;
   if(keys.ArrowDown||keys.s||touch.down) dy+=1;
   if(keys.ArrowLeft||keys.a||touch.left) dx-=1;
@@ -340,20 +376,18 @@ function move(dt){
     else S.dir = dy>0?'down':'up';
     const sp=3.8;
     const nx=S.x+dx*sp*dt, ny=S.y+dy*sp*dt;
-    if(!solid(Math.floor(nx),Math.floor(S.y))&&!solid(Math.floor(nx+0.35),Math.floor(S.y))&&
-       !solid(Math.floor(nx),Math.floor(S.y+0.35))&&!solid(Math.floor(nx+0.35),Math.floor(S.y+0.35))) S.x=nx;
-    if(!solid(Math.floor(S.x),Math.floor(ny))&&!solid(Math.floor(S.x+0.35),Math.floor(ny))&&
-       !solid(Math.floor(S.x),Math.floor(ny+0.35))&&!solid(Math.floor(S.x+0.35),Math.floor(ny+0.35))) S.y=ny;
+    // Slightly softer collision so you can reach edge exits
+    if(!solid(Math.floor(nx),Math.floor(S.y))&&!solid(Math.floor(nx+0.3),Math.floor(S.y))&&
+       !solid(Math.floor(nx),Math.floor(S.y+0.3))&&!solid(Math.floor(nx+0.3),Math.floor(S.y+0.3))) S.x=nx;
+    if(!solid(Math.floor(S.x),Math.floor(ny))&&!solid(Math.floor(S.x+0.3),Math.floor(ny))&&
+       !solid(Math.floor(S.x),Math.floor(ny+0.3))&&!solid(Math.floor(S.x+0.3),Math.floor(ny+0.3))) S.y=ny;
+    // Clamp so player never leaves the playable area
+    S.x = Math.max(0.6, Math.min(COLS-1.1, S.x));
+    S.y = Math.max(0.6, Math.min(ROWS-1.1, S.y));
     S.anim+=dt*9;
     footT-=dt;
     if(footT<=0){ SFX.step(); footT=0.26; if(Math.random()<0.45) spawn(S.x*T+16,S.y*T+28,{c:'#a09060',s:1.5,life:0.35}); }
-    // links
-    for(const L of Z().links){
-      if(Math.abs(S.x-L.x)<0.65 && Math.abs(S.y-L.y)<0.65){
-        SFX.portal(); S.zone=L.to; S.x=L.tx+0.5; S.y=L.ty+0.5;
-        toast('Entering '+zones[S.zone].name); save(); burst(S.x*T,S.y*T,7,'#e0b45c'); break;
-      }
-    }
+    tryExit();
   } else S.anim=0;
 
   // enemies
@@ -575,12 +609,20 @@ function draw(){
   const z=Z();
   for(let ty=0;ty<ROWS;ty++) for(let tx=0;tx<COLS;tx++) drawTile(tx,ty,z.tiles[ty][tx],z.biome);
 
-  // exit markers
+  // exit markers – larger, pulsing, labeled
   for(const L of z.links){
     const px=L.x*T-camX, py=L.y*T-camY;
-    ctx.strokeStyle=`rgba(224,180,92,${0.45+Math.sin(t*3)*0.25})`; ctx.lineWidth=2;
-    ctx.strokeRect(px+3,py+3,T-6,T-6);
-    ctx.fillStyle='rgba(224,180,92,0.12)'; ctx.fillRect(px+3,py+3,T-6,T-6);
+    const pulse = 0.55 + Math.sin(t*3.2)*0.3;
+    ctx.strokeStyle=`rgba(224,180,92,${pulse})`; ctx.lineWidth=3;
+    ctx.strokeRect(px+1,py+1,T-2,T-2);
+    ctx.fillStyle=`rgba(224,180,92,${0.18+Math.sin(t*3)*0.08})`;
+    ctx.fillRect(px+1,py+1,T-2,T-2);
+    if(L.label){
+      ctx.fillStyle='#e0b45c';
+      ctx.font='bold 10px system-ui';
+      ctx.textAlign='center';
+      ctx.fillText(L.label, px+T/2, py-4);
+    }
   }
 
   const sorted=[...z.objs].sort((a,b)=>a.y-b.y);
