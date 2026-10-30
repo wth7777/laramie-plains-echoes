@@ -68,11 +68,14 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <canvas id="game" width="800" height="500"></canvas>
   <div id="toast" class="toast"></div>
   <div id="title">
-    <div class="sub">Star-Well Survey</div>
-    <h1>LARAMIE<br>PLAINS</h1>
-    <p>The Union Pacific has not yet reached these high plains. You arrive with a survey chain and a blank field book. Something under the old well is answering the measurements — and the storm is coming.</p>
-    <button class="start" id="startBtn">BEGIN SURVEY</button>
-    <p style="margin-top:12px;font-size:11px;opacity:.7">WASD / Arrows · Hold Shift to sprint · Space interact · X tool<br>Larger view · Faster movement · Full atmosphere</p>
+    <canvas id="intro" width="800" height="500" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated"></canvas>
+    <div id="titleContent" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:16px;text-align:center;background:linear-gradient(180deg,rgba(8,14,22,.55) 0%,rgba(10,18,24,.75) 100%)">
+      <div class="sub">Star-Well Survey · v4</div>
+      <h1>LARAMIE<br>PLAINS</h1>
+      <p>The Union Pacific has not yet reached these high plains. You arrive with a survey chain and a blank field book. Something under the old well is answering the measurements — and the storm is coming.</p>
+      <button class="start" id="startBtn">BEGIN THE JOURNEY</button>
+      <p style="margin-top:12px;font-size:11px;opacity:.75">Cinematic opening · Sprint · Storm atmosphere · Deeper mystery<br>WASD / Arrows · Hold Shift to sprint · Space interact · X tool</p>
+    </div>
   </div>
 </section>
 
@@ -102,7 +105,7 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <button id="helpBtn">Help</button>
   <button id="resetBtn">New Game</button>
 </section>
-<footer>Star-Well Survey · v3 — larger view · sprint · storm · deeper mystery</footer>
+<footer>Star-Well Survey · v4 — cinematic opening · frontier atmosphere · sprint · storm</footer>
 
 <div id="modal" class="modal"><div class="panel"><button class="close" id="closeModal">×</button><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
 
@@ -134,6 +137,7 @@ let last = 0, footT = 0, time = 0;
 let muted = false;
 let lightning = 0, stormT = 0, rain = [];
 let exitCd = 0;
+let introT = 0; // cinematic intro timer
 
 function save(){ try{ localStorage.setItem(SAVE, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ return JSON.parse(localStorage.getItem(SAVE)||'null'); }catch(e){ return null; } }
@@ -823,6 +827,79 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('keyup',e=>{ keys[e.key]=false; keys[e.key.toLowerCase()]=false; });
 window.addEventListener('pointerdown',()=>{ resume(); if(S.started){ startAmbient(); startMusic(); } },{once:true});
 
+
+// ---------- Cinematic intro (runs on title screen) ----------
+function drawIntro(t){
+  const ic = document.getElementById('intro');
+  if(!ic) return;
+  const ix = ic.getContext('2d');
+  ix.imageSmoothingEnabled = false;
+  const iw = 800, ih = 500;
+  // Sky gradient
+  const g = ix.createLinearGradient(0,0,0,ih);
+  g.addColorStop(0, '#0a1428');
+  g.addColorStop(0.45, '#1a2a40');
+  g.addColorStop(0.7, '#3a4a38');
+  g.addColorStop(1, '#2a3a28');
+  ix.fillStyle = g;
+  ix.fillRect(0,0,iw,ih);
+  // Stars
+  ix.fillStyle = '#e8e0d0';
+  for(let i=0;i<60;i++){
+    const sx = (i*97 + t*8) % iw;
+    const sy = (i*53) % (ih*0.45);
+    const a = 0.3 + Math.sin(t*2 + i)*0.4;
+    ix.globalAlpha = Math.max(0.1, a);
+    ix.fillRect(sx, sy, 2, 2);
+  }
+  ix.globalAlpha = 1;
+  // Distant mountains (layered)
+  ix.fillStyle = '#1a2438';
+  ix.beginPath(); ix.moveTo(0,ih*0.55);
+  for(let x=0;x<=iw;x+=40) ix.lineTo(x, ih*0.55 - 40 - Math.sin(x*0.02 + t*0.1)*12 - (x%80===0?30:0));
+  ix.lineTo(iw,ih); ix.lineTo(0,ih); ix.fill();
+  ix.fillStyle = '#243048';
+  ix.beginPath(); ix.moveTo(0,ih*0.62);
+  for(let x=0;x<=iw;x+=30) ix.lineTo(x, ih*0.62 - 25 - Math.sin(x*0.03 - t*0.15)*8);
+  ix.lineTo(iw,ih); ix.lineTo(0,ih); ix.fill();
+  // Sun / moon glow
+  const sunX = iw*0.75 + Math.sin(t*0.2)*10;
+  const sunY = ih*0.32;
+  const rg = ix.createRadialGradient(sunX,sunY,5,sunX,sunY,80);
+  rg.addColorStop(0, 'rgba(224,180,92,0.55)');
+  rg.addColorStop(0.5, 'rgba(224,180,92,0.15)');
+  rg.addColorStop(1, 'rgba(224,180,92,0)');
+  ix.fillStyle = rg;
+  ix.beginPath(); ix.arc(sunX,sunY,80,0,Math.PI*2); ix.fill();
+  ix.fillStyle = '#e0b45c';
+  ix.beginPath(); ix.arc(sunX,sunY,14,0,Math.PI*2); ix.fill();
+  // Foreground prairie
+  ix.fillStyle = '#2a3a28';
+  ix.fillRect(0, ih*0.72, iw, ih*0.28);
+  // Swaying grass
+  ix.strokeStyle = '#3a5a38';
+  ix.lineWidth = 2;
+  for(let i=0;i<40;i++){
+    const gx = (i*22 + t*15) % iw;
+    const gy = ih*0.75 + (i%5)*8;
+    const sway = Math.sin(t*3 + i)*4;
+    ix.beginPath(); ix.moveTo(gx, gy+20); ix.lineTo(gx+sway, gy); ix.stroke();
+  }
+  // Occasional lightning on intro
+  if(Math.sin(t*0.7) > 0.92){
+    ix.fillStyle = 'rgba(200,220,255,0.25)';
+    ix.fillRect(0,0,iw,ih);
+  }
+  // Surveyor silhouette walking
+  const walkX = (t*25) % (iw+40) - 20;
+  const bob = Math.abs(Math.sin(t*6))*3;
+  ix.fillStyle = '#0a1018';
+  ix.fillRect(walkX+8, ih*0.68 - 28 + bob, 12, 16); // body
+  ix.beginPath(); ix.arc(walkX+14, ih*0.68 - 32 + bob, 6, 0, Math.PI*2); ix.fill(); // head
+  ix.fillRect(walkX+6, ih*0.68 - 12 + bob, 5, 10 + Math.sin(t*8)*2); // leg
+  ix.fillRect(walkX+15, ih*0.68 - 12 + bob, 5, 10 - Math.sin(t*8)*2);
+}
+
 // ---------- Loop ----------
 function frame(t){
   const dt=Math.min(0.05,(t-last)/1000||0); last=t;
@@ -832,8 +909,10 @@ function frame(t){
     updateStorm(dt);
     particles=particles.filter(p=>p.life>0);
     particles.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; p.vy+=50*dt; });
+    draw();
+  } else {
+    drawIntro(t/1000);
   }
-  draw();
   updateHud();
   requestAnimationFrame(frame);
 }
