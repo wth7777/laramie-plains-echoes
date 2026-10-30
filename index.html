@@ -70,7 +70,7 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <div id="title">
     <canvas id="intro" width="800" height="500" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated"></canvas>
     <div id="titleContent" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:16px;text-align:center;background:linear-gradient(180deg,rgba(8,14,22,.55) 0%,rgba(10,18,24,.75) 100%)">
-      <div class="sub">Star-Well Survey · v4</div>
+      <div class="sub">Star-Well Survey · v5</div>
       <h1>LARAMIE<br>PLAINS</h1>
       <p>The Union Pacific has not yet reached these high plains. You arrive with a survey chain and a blank field book. Something under the old well is answering the measurements — and the storm is coming.</p>
       <button class="start" id="startBtn">BEGIN THE JOURNEY</button>
@@ -105,7 +105,7 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <button id="helpBtn">Help</button>
   <button id="resetBtn">New Game</button>
 </section>
-<footer>Star-Well Survey · v4 — cinematic opening · frontier atmosphere · sprint · storm</footer>
+<footer>Star-Well Survey · v5 — Zelda-style sprite atlas · cinematic · sprint · storm</footer>
 
 <div id="modal" class="modal"><div class="panel"><button class="close" id="closeModal">×</button><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
 
@@ -117,6 +117,124 @@ const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 const W = 800, H = 500, T = 40;
 const COLS = 20, ROWS = 12;
+
+// ---------- Sprite Atlas (Zelda / Swordbird-inspired) ----------
+// Generated at runtime so the game stays single-file and sharp
+const ATLAS_W = 256, ATLAS_H = 256;
+const atlasCanvas = document.createElement('canvas');
+atlasCanvas.width = ATLAS_W; atlasCanvas.height = ATLAS_H;
+const actx = atlasCanvas.getContext('2d');
+actx.imageSmoothingEnabled = false;
+
+function px(x,y,c,s=1){ actx.fillStyle=c; actx.fillRect(x,y,s,s); }
+function rect(x,y,w,h,c){ actx.fillStyle=c; actx.fillRect(x,y,w,h); }
+
+function buildAtlas(){
+  actx.clearRect(0,0,ATLAS_W,ATLAS_H);
+  actx.fillStyle = '#000'; actx.fillRect(0,0,ATLAS_W,ATLAS_H);
+
+  // ---- Player walk cycles (row 0-3, 4 frames each, 32x32) ----
+  // Dir: 0=down, 1=up, 2=left, 3=right
+  const skin='#e8c8a0', coat='#2a5a7a', hat='#3a2a1a', boot='#2a2a3a', outline='#1a1a22';
+  for(let dir=0; dir<4; dir++){
+    for(let f=0; f<4; f++){
+      const ox = f*32, oy = dir*32;
+      // shadow
+      rect(ox+8, oy+28, 16, 4, 'rgba(0,0,0,0.35)');
+      // legs (animated)
+      const legOff = (f%2===0) ? 0 : 2;
+      if(dir===0 || dir===1){ // down/up
+        rect(ox+10, oy+22, 5, 8+legOff, boot);
+        rect(ox+17, oy+22, 5, 8-legOff, boot);
+      } else {
+        rect(ox+11, oy+22, 5, 8, boot);
+        rect(ox+16, oy+22, 5, 8, boot);
+      }
+      // body
+      rect(ox+9, oy+12, 14, 12, coat);
+      // head
+      rect(ox+10, oy+4, 12, 10, skin);
+      // hat
+      rect(ox+8, oy+2, 16, 4, hat);
+      rect(ox+11, oy+0, 10, 3, hat);
+      // face detail
+      if(dir===0){ px(ox+13,oy+8,'#2a2a2a'); px(ox+18,oy+8,'#2a2a2a'); } // eyes down
+      if(dir===1){ /* back of head */ }
+      if(dir===2){ px(ox+12,oy+8,'#2a2a2a'); } // left
+      if(dir===3){ px(ox+19,oy+8,'#2a2a2a'); } // right
+      // outline touches
+      rect(ox+9, oy+12, 1, 12, outline);
+      rect(ox+22, oy+12, 1, 12, outline);
+    }
+  }
+
+  // ---- Hammer / sword (row 4) ----
+  // frame 0: hammer down, 1: swing right, 2: swing left
+  rect(0, 128, 6, 20, '#8a6a30'); // handle
+  rect(0, 128, 14, 8, '#c0c0d0'); // head
+  rect(32, 128, 20, 6, '#c0c0d0');
+  rect(32, 130, 6, 14, '#8a6a30');
+  rect(64, 128, 20, 6, '#c0c0d0');
+  rect(78, 130, 6, 14, '#8a6a30');
+
+  // ---- Objects (row 5, 32x32) ----
+  // 0: stake
+  rect(8, 160+6, 4, 20, '#c9a227');
+  rect(5, 160+4, 10, 5, '#e8d080');
+  // 1: chest
+  rect(4, 160+10, 24, 16, '#6a4a28');
+  rect(4, 160+10, 24, 6, '#8a6a38');
+  rect(14, 160+14, 4, 6, '#e0b45c');
+  // 2: sign
+  rect(14, 160+8, 4, 20, '#5a4030');
+  rect(4, 160+4, 24, 10, '#8a6a40');
+  // 3: rock
+  actx.fillStyle='#4a4a58';
+  actx.beginPath(); actx.moveTo(6,188); actx.lineTo(10,168); actx.lineTo(24,166); actx.lineTo(28,186); actx.fill();
+  rect(14, 160+14, 5, 5, '#3a6a9a');
+  // 4: well
+  actx.fillStyle='#3a3a42'; actx.beginPath(); actx.ellipse(16,184,14,6,0,0,Math.PI*2); actx.fill();
+  actx.fillStyle='#2a2a32'; actx.beginPath(); actx.ellipse(16,182,10,4,0,0,Math.PI*2); actx.fill();
+  // 5: shrine
+  rect(10, 160+6, 12, 22, '#5a5a6a');
+  rect(6, 160+4, 20, 6, '#7a7a8a');
+  // 6: tent
+  actx.fillStyle='#6a5a40'; actx.beginPath(); actx.moveTo(4,188); actx.lineTo(16,164); actx.lineTo(28,188); actx.fill();
+  rect(14, 160+16, 4, 10, '#4a3a28');
+  // 7: fire base
+  rect(10, 160+20, 12, 4, '#4a3020');
+
+  // ---- NPC (row 6) ----
+  rect(10, 192+14, 12, 12, '#2a3a4a');
+  actx.fillStyle='#e0c8a0'; actx.beginPath(); actx.arc(16,192+10,6,0,Math.PI*2); actx.fill();
+  rect(8, 192+15, 4, 8, '#3d5a4a');
+  rect(20, 192+15, 4, 8, '#3d5a4a');
+  rect(9, 192+4, 14, 4, '#4a3a2a'); // hat
+
+  // ---- Enemy (row 6, x=32) ----
+  rect(32+8, 192+12, 16, 14, '#5a3a3a');
+  actx.fillStyle='#2a1a1a'; actx.beginPath(); actx.arc(32+16,192+10,7,0,Math.PI*2); actx.fill();
+
+  // ---- Building (row 6, x=64) ----
+  rect(64+2, 192+8, 28, 20, '#4a3a2a');
+  actx.fillStyle='#3a2a1a'; actx.beginPath(); actx.moveTo(64,192+10); actx.lineTo(64+16,192+2); actx.lineTo(64+32,192+10); actx.fill();
+  rect(64+12, 192+16, 8, 12, '#1a2030');
+
+  // ---- Grass detail tiles (row 7) ----
+  for(let i=0;i<4;i++){
+    const ox=i*32;
+    rect(ox, 224, 32, 32, i%2?'#356235':'#3d6b3a');
+    actx.fillStyle='#4a7a45';
+    for(let g=0;g<5;g++) rect(ox+4+g*6, 224+8+(g%3)*6, 2, 4, '#4a7a45');
+  }
+}
+buildAtlas();
+
+// Sprite helpers
+function spr(sx, sy, dx, dy, dw=32, dh=32){
+  ctx.drawImage(atlasCanvas, sx, sy, 32, 32, Math.round(dx), Math.round(dy), dw, dh);
+}
+
 
 // ---------- State ----------
 const SAVE = 'laramieStarWell_v3';
@@ -574,111 +692,105 @@ function drawTile(tx,ty,ch,biome){
 
 function drawObj(o,t){
   if(!alive(o)) return;
-  const px=o.x*T-camX, py=o.y*T-camY;
-  if(px<-50||py<-50||px>W+30||py>H+30) return;
-  const bob=Math.sin(t*2.8+o.x)*1.6;
+  const px = o.x*T - camX;
+  const py = o.y*T - camY;
+  if(px < -50 || py < -50 || px > W+30 || py > H+30) return;
+  const bob = Math.sin(t*2.8 + o.x)*1.5;
+
   switch(o.k){
-    case'stake':{
-      const got=(o.id==='A'&&S.stakeA)||(o.id==='B'&&S.stakeB);
-      ctx.fillStyle=got?'#4a5a4a':'#c9a227'; ctx.fillRect(px+16,py+10+bob,5,24);
-      ctx.fillStyle='#e8d080'; ctx.fillRect(px+13,py+7+bob,11,6);
-      if(!got){ ctx.fillStyle=`rgba(224,180,92,${0.32+Math.sin(t*4)*0.16})`; ctx.beginPath(); ctx.arc(px+18,py+14+bob,11,0,Math.PI*2); ctx.fill(); }
+    case 'stake': {
+      const got = (o.id==='A'&&S.stakeA)||(o.id==='B'&&S.stakeB);
+      spr(0, 160, px, py+bob, 36, 36);
+      if(!got){
+        ctx.fillStyle = `rgba(224,180,92,${0.3+Math.sin(t*4)*0.15})`;
+        ctx.beginPath(); ctx.arc(px+18, py+14+bob, 12, 0, Math.PI*2); ctx.fill();
+      }
       break;
     }
-    case'well':{
-      ctx.fillStyle='#3a3a42'; ctx.beginPath(); ctx.ellipse(px+20,py+26,16,7,0,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#2a2a32'; ctx.beginPath(); ctx.ellipse(px+20,py+24,12,5,0,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='#5a5a6a'; ctx.lineWidth=2; ctx.beginPath(); ctx.ellipse(px+20,py+22,14,6,0,0,Math.PI*2); ctx.stroke();
-      if(S.stakeA&&S.stakeB){ ctx.fillStyle=`rgba(100,180,255,${0.14+Math.sin(t*2)*0.09})`; ctx.beginPath(); ctx.ellipse(px+20,py+20,10,4,0,0,Math.PI*2); ctx.fill(); }
+    case 'well':
+      spr(128, 160, px, py, 40, 40);
+      if(S.stakeA && S.stakeB){
+        ctx.fillStyle = `rgba(100,180,255,${0.14+Math.sin(t*2)*0.08})`;
+        ctx.beginPath(); ctx.ellipse(px+20, py+20, 12, 5, 0, 0, Math.PI*2); ctx.fill();
+      }
+      break;
+    case 'npc':
+      spr(0, 192, px, py, 38, 38);
+      break;
+    case 'chest':
+      spr(32, 160, px, py, 36, 36);
+      break;
+    case 'sign':
+      spr(64, 160, px, py, 36, 36);
+      break;
+    case 'build':
+      spr(64, 192, px-4, py, 44, 44);
+      break;
+    case 'rock':
+      spr(96, 160, px, py, 36, 36);
+      break;
+    case 'enemy': {
+      const fl = S.invuln>0 && Math.floor(t*10)%2 ? 0.4 : 1;
+      ctx.globalAlpha = fl;
+      spr(32, 192, px, py, 38, 38);
+      ctx.globalAlpha = 1;
       break;
     }
-    case'npc':{
-      ctx.fillStyle='#2a3a4a'; ctx.fillRect(px+13,py+16,12,14);
-      ctx.fillStyle='#e0c8a0'; ctx.beginPath(); ctx.arc(px+19,py+12,7,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#3d5a4a'; ctx.fillRect(px+10,py+17,5,9); ctx.fillRect(px+23,py+17,5,9);
+    case 'shrine':
+      spr(160, 160, px, py, 40, 40);
+      ctx.fillStyle = `rgba(180,200,255,${0.25+Math.sin(t*2)*0.12})`;
+      ctx.beginPath(); ctx.arc(px+20, py+12, 8, 0, Math.PI*2); ctx.fill();
+      break;
+    case 'cave': {
+      ctx.fillStyle = '#1a1a22';
+      ctx.beginPath();
+      ctx.moveTo(px+4, py+36);
+      ctx.quadraticCurveTo(px+20, py+4, px+36, py+36);
+      ctx.closePath();
+      ctx.fill();
+      if(S.flags.door){ ctx.fillStyle='#2a3a5a'; ctx.fillRect(px+12, py+14, 16, 20); }
       break;
     }
-    case'chest':{
-      ctx.fillStyle='#6a4a28'; ctx.fillRect(px+8,py+14,24,16);
-      ctx.fillStyle='#8a6a38'; ctx.fillRect(px+8,py+14,24,6);
-      ctx.fillStyle='#e0b45c'; ctx.fillRect(px+17,py+18,5,7);
+    case 'fire': {
+      spr(224, 160, px, py, 36, 36);
+      const fl = 0.65 + Math.sin(t*11)*0.35;
+      ctx.fillStyle = `rgba(255,140,40,${fl})`;
+      ctx.beginPath(); ctx.moveTo(px+18, py+6); ctx.lineTo(px+10, py+22); ctx.lineTo(px+26, py+22); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = `rgba(255,220,80,${fl})`;
+      ctx.beginPath(); ctx.moveTo(px+18, py+10); ctx.lineTo(px+13, py+22); ctx.lineTo(px+23, py+22); ctx.closePath(); ctx.fill();
+      if(Math.random()<0.28) spawn(px+18, py+8, {c:'#ff8844', vy:-30, life:0.4});
       break;
     }
-    case'sign':{
-      ctx.fillStyle='#5a4030'; ctx.fillRect(px+16,py+12,5,22);
-      ctx.fillStyle='#8a6a40'; ctx.fillRect(px+7,py+7,24,12);
+    case 'tent':
+      spr(192, 160, px, py, 40, 40);
       break;
-    }
-    case'build':{
-      ctx.fillStyle='#4a3a2a'; ctx.fillRect(px+2,py+10,36,26);
-      ctx.fillStyle='#3a2a1a'; ctx.beginPath(); ctx.moveTo(px,py+12); ctx.lineTo(px+20,py+2); ctx.lineTo(px+40,py+12); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#1a2030'; ctx.fillRect(px+15,py+22,10,14);
-      break;
-    }
-    case'rock':{
-      ctx.fillStyle='#4a4a58'; ctx.beginPath(); ctx.moveTo(px+6,py+28); ctx.lineTo(px+12,py+12); ctx.lineTo(px+28,py+10); ctx.lineTo(px+32,py+26); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#3a6a9a'; ctx.fillRect(px+16,py+16,5,5);
-      break;
-    }
-    case'enemy':{
-      const fl=S.invuln>0&&Math.floor(t*10)%2?0.4:1;
-      ctx.globalAlpha=fl;
-      ctx.fillStyle=o.id.startsWith('coy')?'#8a6a40':'#5a3a3a';
-      ctx.fillRect(px+10,py+14,20,16);
-      ctx.fillStyle='#2a1a1a'; ctx.beginPath(); ctx.arc(px+20,py+12,8,0,Math.PI*2); ctx.fill();
-      ctx.globalAlpha=1; break;
-    }
-    case'shrine':{
-      ctx.fillStyle='#5a5a6a'; ctx.fillRect(px+12,py+8,16,26);
-      ctx.fillStyle='#7a7a8a'; ctx.fillRect(px+7,py+5,26,7);
-      ctx.fillStyle=`rgba(180,200,255,${0.28+Math.sin(t*2)*0.14})`; ctx.beginPath(); ctx.arc(px+20,py+10,7,0,Math.PI*2); ctx.fill();
-      break;
-    }
-    case'cave':{
-      ctx.fillStyle='#1a1a22'; ctx.beginPath(); ctx.moveTo(px+4,py+34); ctx.quadraticCurveTo(px+20,py+4,px+36,py+34); ctx.closePath(); ctx.fill();
-      if(S.flags.door){ ctx.fillStyle='#2a3a5a'; ctx.fillRect(px+12,py+14,16,20); }
-      break;
-    }
-    case'fire':{
-      ctx.fillStyle='#4a3020'; ctx.fillRect(px+12,py+24,16,5);
-      const fl=0.65+Math.sin(t*11)*0.35;
-      ctx.fillStyle=`rgba(255,140,40,${fl})`; ctx.beginPath(); ctx.moveTo(px+20,py+8); ctx.lineTo(px+12,py+24); ctx.lineTo(px+28,py+24); ctx.closePath(); ctx.fill();
-      ctx.fillStyle=`rgba(255,220,80,${fl})`; ctx.beginPath(); ctx.moveTo(px+20,py+12); ctx.lineTo(px+15,py+24); ctx.lineTo(px+25,py+24); ctx.closePath(); ctx.fill();
-      if(Math.random()<0.3) spawn(px+20,py+10,{c:'#ff8844',vy:-32,life:0.4});
-      break;
-    }
-    case'tent':{
-      ctx.fillStyle='#6a5a40'; ctx.beginPath(); ctx.moveTo(px+4,py+30); ctx.lineTo(px+20,py+6); ctx.lineTo(px+36,py+30); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#4a3a28'; ctx.fillRect(px+17,py+18,6,12);
-      break;
-    }
   }
 }
 
+
 function drawPlayer(t){
-  const px=S.x*T-camX, py=S.y*T-camY;
-  const walk=Math.sin(S.anim)*2.2;
-  ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(px+20,py+36,12,5,0,0,Math.PI*2); ctx.fill();
-  if(S.invuln>0&&Math.floor(t*12)%2===0) ctx.globalAlpha=0.4;
-  ctx.fillStyle='#2a4a6a'; ctx.fillRect(px+12,py+16+walk*0.3,16,16);
-  ctx.fillStyle='#e0c8a0'; ctx.beginPath(); ctx.arc(px+20,py+12+walk*0.2,8,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#3a2a1a'; ctx.fillRect(px+9,py+4+walk*0.2,22,5); ctx.fillRect(px+13,py+1+walk*0.2,14,5);
-  ctx.fillStyle='#2a2a3a';
-  const leg=Math.sin(S.anim)*3.5;
-  ctx.fillRect(px+13,py+30,5,7+(S.dir==='down'||S.dir==='up'?leg:0));
-  ctx.fillRect(px+22,py+30,5,7-(S.dir==='down'||S.dir==='up'?leg:0));
+  const px = S.x*T - camX;
+  const py = S.y*T - camY;
+  // Direction row: 0 down, 1 up, 2 left, 3 right
+  let row = 0;
+  if(S.dir==='up') row=1;
+  else if(S.dir==='left') row=2;
+  else if(S.dir==='right') row=3;
+  const frame = (S.anim > 0) ? (Math.floor(S.anim) % 4) : 0;
+  if(S.invuln > 0 && Math.floor(t*12)%2===0) ctx.globalAlpha = 0.4;
+  spr(frame*32, row*32, px, py, 40, 40);
+  // hammer overlay when equipped
   if(S.hasHammer){
-    ctx.fillStyle='#c0c0d0';
-    if(S.dir==='right'){ ctx.fillRect(px+28,py+18,14,4); ctx.fillStyle='#8a6a30'; ctx.fillRect(px+25,py+16,5,8); }
-    else if(S.dir==='left'){ ctx.fillRect(px-2,py+18,14,4); ctx.fillStyle='#8a6a30'; ctx.fillRect(px+10,py+16,5,8); }
-    else ctx.fillRect(px+17,py+8,4,12);
+    if(S.dir==='right') spr(32, 128, px+18, py+8, 28, 28);
+    else if(S.dir==='left') spr(64, 128, px-8, py+8, 28, 28);
+    else spr(0, 128, px+10, py+4, 24, 24);
   }
-  // Sprint dust
   if(S.sprint && (keys.ArrowUp||keys.w||keys.ArrowDown||keys.s||keys.ArrowLeft||keys.a||keys.ArrowRight||keys.d||touch.up||touch.down||touch.left||touch.right)){
-    if(Math.random()<0.4) spawn(px+20,py+36,{c:'#b0a070',s:2,life:0.25,vy:-10});
+    if(Math.random()<0.35) spawn(px+20, py+36, {c:'#b0a070', s:2, life:0.25, vy:-10});
   }
-  ctx.globalAlpha=1;
+  ctx.globalAlpha = 1;
 }
+
 
 function draw(){
   const t=performance.now()/1000;
