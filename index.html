@@ -105,7 +105,7 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <button id="helpBtn">Help</button>
   <button id="resetBtn">New Game</button>
 </section>
-<footer>Star-Well Survey · v6.1 — close-up camera · opening cinematic · story beats · sprint · storm</footer>
+<footer>Star-Well Survey · v7 — underworld · boss · ending · close-up · cutscenes</footer>
 
 <div id="modal" class="modal"><div class="panel"><button class="close" id="closeModal">×</button><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
 
@@ -465,6 +465,19 @@ const zones = {
     links:[
       {x:19, y:6, to:'ridge', tx:2.5, ty:6, label:'RIDGE'}
     ]
+  },
+  underworld: {
+    name:'Understar Cavern', biome:'star',
+    tiles: makeGrid('s'),
+    objs: [
+      {x:10,y:3,k:'starwell'},
+      {x:10,y:7,k:'enemy',id:'echo',hp:5, boss:true},
+      {x:5,y:5,k:'sign',label:'La Ramée’s Mark'},
+      {x:15,y:9,k:'chest',id:'c6',item:'coins'}
+    ],
+    links:[
+      {x:10, y:11, to:'canyon', tx:10, ty:6.5, label:'CANYON'}
+    ]
   }
 };
 function makeGrid(base){
@@ -613,9 +626,10 @@ function move(dt){
   for(const o of Z().objs){
     if(o.k!=='enemy'||!alive(o)) continue;
     const dist=Math.hypot(S.x-(o.x+0.5),S.y-(o.y+0.5));
-    if(dist<5.8&&dist>0.55){
+    if(dist<(o.boss?8:5.8)&&dist>0.55){
       const a=Math.atan2(S.y-(o.y+0.5),S.x-(o.x+0.5));
-      o.x+=Math.cos(a)*1.55*dt; o.y+=Math.sin(a)*1.55*dt;
+      const spd = o.boss ? 2.1 : 1.55;
+      o.x+=Math.cos(a)*spd*dt; o.y+=Math.sin(a)*spd*dt;
     }
     if(dist<0.65&&S.invuln<=0){
       S.hp=Math.max(0,S.hp-1); S.invuln=1.05; SFX.hurt(); shake=7;
@@ -660,6 +674,16 @@ const CUTSCENES = {
       {speaker: 'Narrator', text: 'Beyond the threshold, stars hang where no sky should be. The survey continues beneath the plains.'},
       {speaker: 'The Voice', text: 'La Ramée never left. His last measurement is still unfinished. Complete it.'},
       {speaker: 'Narrator', text: 'You step forward. The work is not over. It has only changed direction.'}
+    ]
+  },
+  ending: {
+    id: 'ending',
+    pages: [
+      {speaker: 'Narrator', text: 'The Echo of La Ramée falters. The star-light in the cavern steadies. Your survey chain no longer trembles — it points true.'},
+      {speaker: 'The Voice', text: 'The measurement is complete. The line from the high plains to the sky is fixed. Go. The rails will follow what you have marked.'},
+      {speaker: 'Narrator', text: '1867. You climb back toward the canyon with a finished field book and a story no one in the rail office will fully believe.'},
+      {speaker: 'Narrator', text: 'Above, the storm breaks. Somewhere on the ridge, a survey stake still catches the first clear light of morning.'},
+      {speaker: 'Narrator', text: '— THE END —\n\nThank you for surveying the Laramie Plains.'}
     ]
   }
 };
@@ -732,8 +756,22 @@ function interact(){
     case'cave':
       if(!S.hasKey) dialog('Sealed Door','<p>A brass lock, not iron. The metal is warm. You need a key that matches the survey.</p>');
       else if(!S.flags.door){ S.flags.door=true; SFX.portal(); SFX.success(); note('The Understar Door opened with a sound like a bell struck underground.'); save(); setTimeout(()=>startCutscene('door'), 300); }
-      else dialog('Understar Door','<p>The passage remains open. The stars below do not move with the night.</p>'); break;
+      else {
+        // Enter underworld
+        SFX.portal();
+        S.zone = 'underworld';
+        S.x = 10; S.y = 9.5;
+        exitCd = 1.2;
+        toast('Descending into the Understar Cavern…');
+        save();
+        burst(S.x*T, S.y*T, 12, '#a0c0ff');
+      }
+      break;
     case'fire': toast('Warmth against the high-plains wind and the coming storm.'); burst(o.x*T+16,o.y*T+10,6,'#ff8844'); break;
+    case'starwell':
+      if(S.flags.ending) dialog('Understar Pool','<p>The light is steady now. The measurement holds.</p>');
+      else dialog('Understar Pool','<p>Light without a source. The water (if it is water) reflects stars that are not in the sky above.</p><p>Something waits in this cavern — an echo of the surveyor who came before you.</p>');
+      break;
     case'tent': toast('Canvas snaps in the rising wind.'); break;
     default: toast('Interesting, but nothing more.');
   }
@@ -761,7 +799,15 @@ function useTool(){
     for(const o of Z().objs){
       if(o.k==='enemy'&&alive(o)&&Math.hypot(ax-(o.x+0.5),ay-(o.y+0.5))<1.2){
         o.hp=(o.hp||1)-1; SFX.hurt(); shake=5; burst(o.x*T+16,o.y*T+16,9,'#e07060');
-        if(o.hp<=0){ toast('Defeated!'); S.coins+=3; save(); }
+        if(o.hp<=0){
+          toast(o.boss ? 'The Echo fades…' : 'Defeated!');
+          S.coins += o.boss ? 25 : 3;
+          if(o.boss && !S.flags.ending){
+            S.flags.ending = true;
+            save();
+            setTimeout(()=>startCutscene('ending'), 800);
+          } else save();
+        }
       }
     }
   } else { SFX.interact(); toast('You swing the survey chain. Not yet a weapon.'); }
@@ -779,6 +825,7 @@ function drawTile(tx,ty,ch,biome){
   let base,detail;
   if(biome==='prairie'||biome==='town'){ base=(tx+ty)%2? '#356235':'#3d6b3a'; detail='#4a7a45'; }
   else if(biome==='ridge'){ base=(tx+ty)%2? '#4e4638':'#5a5040'; detail='#6a6050'; }
+  else if(biome==='star'){ base=(tx+ty)%2? '#1a1a2e':'#12122a'; detail='#2a2a4a'; }
   else { base=(tx+ty)%2? '#5e4232':'#6a4a38'; detail='#7a5a48'; }
   ctx.fillStyle=base; ctx.fillRect(px,py,T,T);
   // Animated grass / detail
@@ -786,6 +833,9 @@ function drawTile(tx,ty,ch,biome){
   const sway = Math.sin(time*2.2 + tx*0.7 + ty)*1.5;
   if(biome==='prairie'||biome==='town'){
     for(let i=0;i<3;i++){ const gx=px+6+(i*9+tx*3)%24 + sway, gy=py+10+(i*7+ty*2)%20; ctx.fillRect(gx,gy,2,4); }
+  } else if(biome==='star'){
+    // faint star dots on floor
+    if((tx*3+ty*7)%5===0){ ctx.fillStyle='rgba(180,200,255,0.35)'; ctx.fillRect(px+14,py+14,2,2); }
   } else { ctx.fillRect(px+8,py+12,5,2); ctx.fillRect(px+20,py+22,6,2); }
   ctx.fillStyle='rgba(0,0,0,0.14)'; ctx.fillRect(px,py+T-3,T,3);
 }
@@ -898,13 +948,30 @@ function drawObj(o,t){
     case 'enemy': {
       const fl = Math.floor(t*8)%2 ? 1 : 0.85;
       ctx.globalAlpha = fl;
-      ctx.fillStyle = '#5a3a3a';
-      ctx.fillRect(px+10*s, py+16*s, 18*s, 14*s);
-      ctx.fillStyle = '#2a1a1a';
-      ctx.beginPath(); ctx.arc(px+19*s, py+12*s, 8*s, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#c04040';
-      ctx.fillRect(px+15*s, py+10*s, 3*s, 3*s);
-      ctx.fillRect(px+21*s, py+10*s, 3*s, 3*s);
+      if(o.boss){
+        // Echo of La Ramée — larger, glowing
+        const pulse = 0.5 + Math.sin(t*3)*0.3;
+        ctx.fillStyle = `rgba(80,100,180,${0.25+pulse*0.2})`;
+        ctx.beginPath(); ctx.arc(px+20*s, py+18*s, 22*s, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#3a4a8a';
+        ctx.fillRect(px+8*s, py+14*s, 24*s, 18*s);
+        ctx.fillStyle = '#c8d0ff';
+        ctx.beginPath(); ctx.arc(px+20*s, py+10*s, 10*s, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#6080ff';
+        ctx.fillRect(px+15*s, py+8*s, 3*s, 3*s);
+        ctx.fillRect(px+22*s, py+8*s, 3*s, 3*s);
+        // HP pips
+        ctx.fillStyle = '#e07060';
+        for(let i=0;i<(o.hp||0);i++) ctx.fillRect(px+6*s+i*5*s, py+2*s, 4*s, 3*s);
+      } else {
+        ctx.fillStyle = '#5a3a3a';
+        ctx.fillRect(px+10*s, py+16*s, 18*s, 14*s);
+        ctx.fillStyle = '#2a1a1a';
+        ctx.beginPath(); ctx.arc(px+19*s, py+12*s, 8*s, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#c04040';
+        ctx.fillRect(px+15*s, py+10*s, 3*s, 3*s);
+        ctx.fillRect(px+21*s, py+10*s, 3*s, 3*s);
+      }
       ctx.globalAlpha = 1;
       break;
     }
@@ -969,6 +1036,23 @@ function drawObj(o,t){
       ctx.moveTo(px+20*s, py+8*s);
       ctx.lineTo(px+8*s, py+30*s);
       ctx.stroke();
+      break;
+    }
+    case 'starwell': {
+      // glowing understar pool
+      ctx.fillStyle = '#1a2a4a';
+      ctx.beginPath(); ctx.ellipse(px+20*s, py+28*s, 18*s, 8*s, 0, 0, Math.PI*2); ctx.fill();
+      const pulse = 0.35 + Math.sin(t*2.5)*0.2;
+      ctx.fillStyle = `rgba(140,180,255,${pulse})`;
+      ctx.beginPath(); ctx.ellipse(px+20*s, py+26*s, 12*s, 5*s, 0, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = `rgba(220,230,255,${pulse*0.8})`;
+      ctx.beginPath(); ctx.ellipse(px+20*s, py+24*s, 6*s, 2.5*s, 0, 0, Math.PI*2); ctx.fill();
+      // floating motes
+      for(let i=0;i<5;i++){
+        const a = t*1.5 + i*1.2;
+        ctx.fillStyle = `rgba(200,220,255,${0.4+Math.sin(a)*0.3})`;
+        ctx.fillRect(px+12*s+Math.cos(a)*14*s, py+10*s+Math.sin(a*0.7)*8*s, 2*s, 2*s);
+      }
       break;
     }
   }
@@ -1123,7 +1207,8 @@ function updateHud(){
   else if(S.heardWell&&!S.hasMap) obj='Seek the Wind Shrine on the ridge';
   else if(S.hasMap&&!S.hasKey) obj='Find the brass key';
   else if(S.hasKey&&!S.flags.door) obj='Open the Understar Door';
-  else if(S.flags.door) obj='The survey continues beneath the stars…';
+  else if(S.flags.door && !S.flags.ending) obj='Descend into the Understar Cavern and finish the survey';
+  else if(S.flags.ending) obj='Survey complete. The line is fixed.';
   $('objective').textContent=obj;
 }
 
