@@ -38,7 +38,7 @@ header{width:min(100%,900px);padding:8px 12px 4px;display:flex;justify-content:s
 footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:100;padding:12px;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal.show{opacity:1;pointer-events:auto}
-.panel{background:var(--panel);border:1px solid #2a3548;border-radius:12px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto;padding:16px 18px 14px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.55)}
+.panel{background:var(--panel);border:1px solid #2a3548;border-radius:12px;max-width:480px;width:100%;max-height:88vh;overflow-y:auto;padding:14px 16px 14px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.55)}
 .panel h2{color:var(--gold);font-size:1.05rem;margin-bottom:8px;padding-right:24px}
 .panel p,.panel li{font-size:13px;line-height:1.5;margin-bottom:6px}
 .panel ul{padding-left:15px;margin-bottom:6px}
@@ -105,7 +105,7 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <button id="helpBtn">Help</button>
   <button id="resetBtn">New Game</button>
 </section>
-<footer>Star-Well Survey · v7 — underworld · boss · ending · close-up · cutscenes</footer>
+<footer>Star-Well Survey · v8 — illustrated cutscenes · underworld · boss · ending</footer>
 
 <div id="modal" class="modal"><div class="panel"><button class="close" id="closeModal">×</button><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
 
@@ -527,7 +527,14 @@ function toast(msg, ms=2200){
   clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),ms);
 }
 function note(t){ if(!S.notes.includes(t)){ S.notes.unshift(t); if(S.notes.length>16) S.notes.pop(); save(); } }
-function dialog(title, body){ SFX.ui(); $('modalTitle').textContent=title; $('modalBody').innerHTML=body; $('modal').classList.add('show'); }
+function dialog(title, body, art){
+  SFX.ui();
+  $('modalTitle').textContent=title;
+  const artHtml = art ? `<canvas id="dlgArt" width="440" height="160" style="width:100%;height:auto;border-radius:8px;margin-bottom:10px;background:#0a1018;display:block"></canvas>` : '';
+  $('modalBody').innerHTML = artHtml + body;
+  $('modal').classList.add('show');
+  if(art) setTimeout(()=>{ const cv=document.getElementById('dlgArt'); if(cv) drawIllustration(art, cv); }, 20);
+}
 function closeDialog(){ $('modal').classList.remove('show'); }
 function near(o,d=1.25){ return Math.hypot(S.x-(o.x+0.5), S.y-(o.y+0.5)) < d; }
 function alive(o){ if(o.k==='enemy'&&(o.hp||0)<=0) return false; if(o.k==='chest'&&S.opened[o.id]) return false; return true; }
@@ -640,31 +647,215 @@ function move(dt){
 }
 
 
+
+// ---------- Cutscene / interaction illustrations ----------
+function drawIllustration(kind, canvas){
+  const c = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  c.imageSmoothingEnabled = false;
+  c.clearRect(0,0,W,H);
+
+  function sky(top, bot){
+    const g = c.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, top); g.addColorStop(1, bot);
+    c.fillStyle = g; c.fillRect(0,0,W,H);
+  }
+  function stars(n=40){
+    c.fillStyle = '#e8e0d0';
+    for(let i=0;i<n;i++){
+      const x = (i*67)%W, y = (i*41)%(H*0.45);
+      c.globalAlpha = 0.3 + (i%5)*0.12;
+      c.fillRect(x, y, 2, 2);
+    }
+    c.globalAlpha = 1;
+  }
+  function mountains(){
+    c.fillStyle = '#1a2438';
+    c.beginPath(); c.moveTo(0,H*0.52);
+    for(let x=0;x<=W;x+=30) c.lineTo(x, H*0.52 - 20 - Math.sin(x*0.03)*15 - ((x/40)|0)%3*12);
+    c.lineTo(W,H); c.lineTo(0,H); c.fill();
+    c.fillStyle = '#243048';
+    c.beginPath(); c.moveTo(0,H*0.6);
+    for(let x=0;x<=W;x+=25) c.lineTo(x, H*0.6 - 12 - Math.sin(x*0.04)*8);
+    c.lineTo(W,H); c.lineTo(0,H); c.fill();
+  }
+  function prairie(){
+    c.fillStyle = '#2a3a28';
+    c.fillRect(0, H*0.68, W, H*0.32);
+    c.fillStyle = '#3a5a38';
+    for(let i=0;i<30;i++){
+      const x = (i*18)%W;
+      c.fillRect(x, H*0.7+(i%4)*6, 2, 6);
+    }
+  }
+  function well(cx, cy, glow){
+    c.fillStyle = '#3a3a42';
+    c.beginPath(); c.ellipse(cx, cy+8, 28, 12, 0, 0, Math.PI*2); c.fill();
+    c.fillStyle = '#1a1a22';
+    c.beginPath(); c.ellipse(cx, cy+6, 18, 8, 0, 0, Math.PI*2); c.fill();
+    c.strokeStyle = '#5a5a6a'; c.lineWidth = 3;
+    c.beginPath(); c.ellipse(cx, cy+4, 24, 10, 0, 0, Math.PI*2); c.stroke();
+    c.fillStyle = '#5a4a3a';
+    c.fillRect(cx-32, cy-20, 6, 28);
+    c.fillRect(cx+26, cy-20, 6, 28);
+    c.fillRect(cx-32, cy-24, 64, 6);
+    if(glow){
+      c.fillStyle = 'rgba(100,180,255,0.35)';
+      c.beginPath(); c.ellipse(cx, cy, 16, 6, 0, 0, Math.PI*2); c.fill();
+    }
+  }
+  function alien(cx, cy){
+    // mysterious tall silhouette with faint glow
+    c.fillStyle = 'rgba(140,180,220,0.15)';
+    c.beginPath(); c.arc(cx, cy-30, 40, 0, Math.PI*2); c.fill();
+    c.fillStyle = '#1a2030';
+    // body
+    c.beginPath();
+    c.moveTo(cx-12, cy+20);
+    c.lineTo(cx-8, cy-10);
+    c.lineTo(cx, cy-50);
+    c.lineTo(cx+8, cy-10);
+    c.lineTo(cx+12, cy+20);
+    c.closePath(); c.fill();
+    // head
+    c.beginPath(); c.ellipse(cx, cy-58, 14, 16, 0, 0, Math.PI*2); c.fill();
+    // eyes glow
+    c.fillStyle = 'rgba(120,200,255,0.7)';
+    c.beginPath(); c.ellipse(cx-5, cy-60, 3, 4, 0, 0, Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(cx+5, cy-60, 3, 4, 0, 0, Math.PI*2); c.fill();
+  }
+  function stake(cx, cy){
+    c.fillStyle = '#c9a227';
+    c.fillRect(cx-3, cy-20, 6, 40);
+    c.fillStyle = '#e8d080';
+    c.fillRect(cx-8, cy-26, 16, 8);
+    c.fillStyle = 'rgba(224,180,92,0.3)';
+    c.beginPath(); c.arc(cx, cy-20, 18, 0, Math.PI*2); c.fill();
+  }
+  function camp(){
+    // tent
+    c.fillStyle = '#5a4a30';
+    c.beginPath(); c.moveTo(30, H*0.75); c.lineTo(55, H*0.55); c.lineTo(80, H*0.75); c.fill();
+    // fire
+    c.fillStyle = '#ff8844';
+    c.beginPath(); c.moveTo(100, H*0.62); c.lineTo(92, H*0.75); c.lineTo(108, H*0.75); c.fill();
+    c.fillStyle = '#ffcc44';
+    c.beginPath(); c.moveTo(100, H*0.66); c.lineTo(95, H*0.75); c.lineTo(105, H*0.75); c.fill();
+  }
+
+  if(kind === 'opening' || kind === 'opening0'){
+    sky('#0a1428', '#1a2a20');
+    stars(50);
+    mountains();
+    prairie();
+    camp();
+    well(W*0.72, H*0.62, true);
+    alien(W*0.55, H*0.55);
+    // title plate shadow
+    c.fillStyle = 'rgba(0,0,0,0.25)';
+    c.fillRect(0, H-28, W, 28);
+  } else if(kind === 'opening1'){
+    sky('#0a1428', '#152018');
+    stars(30);
+    mountains();
+    prairie();
+    camp();
+  } else if(kind === 'opening2' || kind === 'mara'){
+    sky('#121c28', '#1a2820');
+    mountains();
+    prairie();
+    // figure (Mara)
+    c.fillStyle = '#2a3a4a';
+    c.fillRect(W*0.45, H*0.5, 20, 28);
+    c.fillStyle = '#e0c8a0';
+    c.beginPath(); c.arc(W*0.45+10, H*0.48, 10, 0, Math.PI*2); c.fill();
+    c.fillStyle = '#4a3a2a';
+    c.fillRect(W*0.45+2, H*0.42, 16, 5);
+  } else if(kind === 'stakes' || kind === 'stake'){
+    sky('#1a2830', '#2a3a28');
+    prairie();
+    stake(W*0.35, H*0.55);
+    stake(W*0.65, H*0.6);
+    c.fillStyle = 'rgba(224,180,92,0.12)';
+    c.fillRect(0,0,W,H);
+  } else if(kind === 'well'){
+    sky('#0a1018', '#1a2030');
+    stars(35);
+    prairie();
+    well(W*0.5, H*0.55, true);
+    // tones rings
+    c.strokeStyle = 'rgba(100,180,255,0.4)';
+    c.lineWidth = 2;
+    c.beginPath(); c.arc(W*0.5, H*0.5, 40, 0, Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(W*0.5, H*0.5, 55, 0, Math.PI*2); c.stroke();
+  } else if(kind === 'door'){
+    sky('#080c18', '#101828');
+    stars(60);
+    // cave mouth
+    c.fillStyle = '#0a0a12';
+    c.beginPath();
+    c.moveTo(W*0.2, H*0.85);
+    c.quadraticCurveTo(W*0.5, H*0.15, W*0.8, H*0.85);
+    c.fill();
+    // stars inside
+    c.fillStyle = '#c0d0ff';
+    for(let i=0;i<15;i++){
+      c.globalAlpha = 0.4 + (i%3)*0.2;
+      c.fillRect(W*0.35+(i*11)%80, H*0.4+(i*7)%40, 2, 2);
+    }
+    c.globalAlpha = 1;
+  } else if(kind === 'ending'){
+    sky('#0a1828', '#1a3020');
+    stars(40);
+    mountains();
+    prairie();
+    well(W*0.5, H*0.58, false);
+    // morning light
+    const g = c.createRadialGradient(W*0.7, H*0.25, 10, W*0.7, H*0.25, 100);
+    g.addColorStop(0, 'rgba(224,180,92,0.4)');
+    g.addColorStop(1, 'rgba(224,180,92,0)');
+    c.fillStyle = g;
+    c.beginPath(); c.arc(W*0.7, H*0.25, 100, 0, Math.PI*2); c.fill();
+  } else if(kind === 'shrine'){
+    sky('#1a2030', '#2a3038');
+    mountains();
+    c.fillStyle = '#5a5a6a';
+    c.fillRect(W*0.45, H*0.4, 20, 50);
+    c.fillStyle = '#7a7a8a';
+    c.fillRect(W*0.4, H*0.36, 40, 10);
+    c.fillStyle = 'rgba(180,200,255,0.5)';
+    c.beginPath(); c.arc(W*0.5, H*0.38, 12, 0, Math.PI*2); c.fill();
+  } else {
+    sky('#1a2030', '#2a3028');
+    prairie();
+  }
+}
+
 // ---------- Cutscenes ----------
 const CUTSCENES = {
   opening: {
     id: 'opening',
     pages: [
-      {speaker: 'Narrator', text: '1867. The Union Pacific has not yet reached these high plains. You ride west with a brass survey chain, a blank field book, and orders to fix the line before the rails arrive.'},
-      {speaker: 'Narrator', text: 'Camp is already pitched when you arrive. The cook fire is low. The wind carries the sound of a train that does not yet exist — and something older beneath it.'},
-      {speaker: 'Mara', text: 'Surveyor. Two brass stakes went missing in the night. Find them both before the storm. The old well… the chain trembles near it.'},
-      {speaker: 'Narrator', text: 'She does not wait for an answer. The Medicine Bow ridge sits dark under a rising cloud bank. Your work begins.'}
+      {speaker: 'Narrator', art:'opening', text: '1867. The Union Pacific has not yet reached these high plains. You ride west with a brass survey chain, a blank field book, and orders to fix the line before the rails arrive.'},
+      {speaker: 'Narrator', art:'opening1', text: 'Camp is already pitched when you arrive. The cook fire is low. The wind carries the sound of a train that does not yet exist — and something older beneath it.'},
+      {speaker: 'Mara', art:'opening2', text: 'Surveyor. Two brass stakes went missing in the night. Find them both before the storm. The old well… the chain trembles near it.'},
+      {speaker: 'Narrator', art:'opening', text: 'She does not wait for an answer. The Medicine Bow ridge sits dark under a rising cloud bank. Your work begins.'}
     ]
   },
   stakes: {
     id: 'stakes',
     pages: [
-      {speaker: 'Narrator', text: 'Both brass stakes are secured. When you lay them side by side on the field table, the etched marks refuse every star chart in the office.'},
-      {speaker: 'Narrator', text: 'The line they form does not run to the railhead. It runs straight down — into the old well at the edge of camp.'},
-      {speaker: 'Narrator', text: 'The storm is closer now. Thunder answers from the ridge. Whatever is under the Star-Well has been waiting for these measurements.'}
+      {speaker: 'Narrator', art:'stakes', text: 'Both brass stakes are secured. When you lay them side by side on the field table, the etched marks refuse every star chart in the office.'},
+      {speaker: 'Narrator', art:'stakes', text: 'The line they form does not run to the railhead. It runs straight down — into the old well at the edge of camp.'},
+      {speaker: 'Narrator', art:'stakes', text: 'The storm is closer now. Thunder answers from the ridge. Whatever is under the Star-Well has been waiting for these measurements.'}
     ]
   },
   well: {
     id: 'well',
     pages: [
-      {speaker: 'Narrator', text: 'Three clear tones rise from the dark. A narrow stair of warm stone reveals itself where only mud and timber should be.'},
-      {speaker: 'The Voice', text: 'Surveyor. You have measured the land. Now measure the sky.'},
-      {speaker: 'Narrator', text: 'The words settle in your bones. The stair waits. The mystery has only begun — and the ridge still holds the key.'}
+      {art:'well', speaker: 'Narrator', text: 'Three clear tones rise from the dark. A narrow stair of warm stone reveals itself where only mud and timber should be.'},
+      {art:'well', speaker: 'The Voice', text: 'Surveyor. You have measured the land. Now measure the sky.'},
+      {art:'well', speaker: 'Narrator', text: 'The words settle in your bones. The stair waits. The mystery has only begun — and the ridge still holds the key.'}
     ]
   },
   door: {
@@ -699,14 +890,19 @@ function showCutscenePage(){
   if(!cutscene) return;
   const pg = cutscene.pages[cutscene.page];
   const isLast = cutscene.page >= cutscene.pages.length - 1;
-  const body = `<div style="margin-bottom:10px"><span style="color:var(--gold);font-size:11px;letter-spacing:.08em;text-transform:uppercase">${pg.speaker}</span></div>
+  // pick art: page.art or cutscene id fallback
+  const art = pg.art || cutscene.id || 'opening';
+  const body = `<canvas id="csArt" width="440" height="200" style="width:100%;height:auto;border-radius:8px;margin-bottom:12px;background:#0a1018;display:block"></canvas>
+    <div style="margin-bottom:8px"><span style="color:var(--gold);font-size:11px;letter-spacing:.08em;text-transform:uppercase">${pg.speaker}</span></div>
     <p style="font-size:14px;line-height:1.55;margin-bottom:14px">${pg.text}</p>
     <button id="csNext" style="background:var(--accent);border:none;color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px">${isLast ? 'Continue' : 'Next'}</button>`;
   $('modalTitle').textContent = '';
   $('modalBody').innerHTML = body;
   $('modal').classList.add('show');
-  // wire button
+  // draw illustration
   setTimeout(()=>{
+    const cv = document.getElementById('csArt');
+    if(cv) drawIllustration(art, cv);
     const btn = document.getElementById('csNext');
     if(btn) btn.onclick = ()=>{
       if(cutscene.page < cutscene.pages.length - 1){
@@ -719,7 +915,8 @@ function showCutscenePage(){
         if(finished === 'opening') toast('Find the brass survey stakes near camp.');
         else if(finished === 'stakes') toast('Investigate the old well.');
         else if(finished === 'well') toast('Seek the Wind Shrine on the ridge.');
-        else if(finished === 'door') toast('The survey continues beneath the stars…');
+        else if(finished === 'door') toast('Descend into the Understar Cavern…');
+        else if(finished === 'ending') toast('Survey complete.');
       }
     };
   }, 30);
@@ -739,9 +936,9 @@ function interact(){
       if(S.stakeA&&S.stakeB&&!S.flags.stakesCS){ S.flags.stakesCS=true; note('Both stakes point to the same impossible place: under the Star-Well.'); SFX.success(); setTimeout(()=>startCutscene('stakes'), 500); }
       save(); break;
     case'well':
-      if(!(S.stakeA&&S.stakeB)) dialog('The Old Well','<p>The rim is etched with markings that look almost like star positions. Your chain trembles, but you need both brass stakes to fix its true location.</p>');
+      if(!(S.stakeA&&S.stakeB)) dialog('The Old Well','<p>The rim is etched with markings that look almost like star positions. Your chain trembles, but you need both brass stakes to fix its true location.</p>','well');
       else if(!S.heardWell){ S.heardWell=true; SFX.well(); note('The Star-Well answered with three tones. A stair of warm stone appeared. Something down there knows the survey.'); save(); setTimeout(()=>startCutscene('well'), 300); }
-      else dialog('The Star-Well','<p>The stair still descends. Whatever waits below remembers Jacques La Ramée — and it is waiting for the rest of the survey.</p>');
+      else dialog('The Star-Well','<p>The stair still descends. Whatever waits below remembers Jacques La Ramée — and it is waiting for the rest of the survey.</p>','well');
       break;
     case'npc':
       dialog(o.name||'Someone', `<p>${NPC[o.id][Math.floor(Math.random()*NPC[o.id].length)]}</p>`); break;
@@ -750,11 +947,11 @@ function interact(){
     case'rock': dialog('Strange Stone','<p>Blue mineral threads the rock. Your compass needle points straight down. You mark it carefully in the field book.</p>'); note('A dark rock near camp bends the compass. The mineral is not on any of the Union Pacific charts.'); break;
     case'chest': openChest(o); break;
     case'shrine':
-      if(!(S.stakeA&&S.stakeB)) dialog('Wind Shrine','<p>A stone marker in a ring of wind-carved rocks. It waits for a surveyor who can read the land and the sky.</p>');
-      else if(!S.hasMap){ S.hasMap=true; SFX.success(); note('The shrine grants map and compass. The old survey lines reveal the path into La Ramée Canyon.'); dialog('Wind Shrine','<p>The stakes align with the ridge. A hidden compartment opens: an old map and a compass that does not point north.</p><p>Canyon trails are now clear.</p>'); save(); }
+      if(!(S.stakeA&&S.stakeB)) dialog('Wind Shrine','<p>A stone marker in a ring of wind-carved rocks. It waits for a surveyor who can read the land and the sky.</p>','shrine');
+      else if(!S.hasMap){ S.hasMap=true; SFX.success(); note('The shrine grants map and compass. The old survey lines reveal the path into La Ramée Canyon.'); dialog('Wind Shrine','<p>The stakes align with the ridge. A hidden compartment opens: an old map and a compass that does not point north.</p><p>Canyon trails are now clear.</p>','shrine'); save(); }
       else toast('The shrine is quiet. The map is yours.'); break;
     case'cave':
-      if(!S.hasKey) dialog('Sealed Door','<p>A brass lock, not iron. The metal is warm. You need a key that matches the survey.</p>');
+      if(!S.hasKey) dialog('Sealed Door','<p>A brass lock, not iron. The metal is warm. You need a key that matches the survey.</p>','door');
       else if(!S.flags.door){ S.flags.door=true; SFX.portal(); SFX.success(); note('The Understar Door opened with a sound like a bell struck underground.'); save(); setTimeout(()=>startCutscene('door'), 300); }
       else {
         // Enter underworld
@@ -769,8 +966,8 @@ function interact(){
       break;
     case'fire': toast('Warmth against the high-plains wind and the coming storm.'); burst(o.x*T+16,o.y*T+10,6,'#ff8844'); break;
     case'starwell':
-      if(S.flags.ending) dialog('Understar Pool','<p>The light is steady now. The measurement holds.</p>');
-      else dialog('Understar Pool','<p>Light without a source. The water (if it is water) reflects stars that are not in the sky above.</p><p>Something waits in this cavern — an echo of the surveyor who came before you.</p>');
+      if(S.flags.ending) dialog('Understar Pool','<p>The light is steady now. The measurement holds.</p>','ending');
+      else dialog('Understar Pool','<p>Light without a source. The water (if it is water) reflects stars that are not in the sky above.</p><p>Something waits in this cavern — an echo of the surveyor who came before you.</p>','door');
       break;
     case'tent': toast('Canvas snaps in the rising wind.'); break;
     default: toast('Interesting, but nothing more.');
