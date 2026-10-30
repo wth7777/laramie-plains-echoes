@@ -70,7 +70,7 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <div id="title">
     <canvas id="intro" width="800" height="500" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated"></canvas>
     <div id="titleContent" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:16px;text-align:center;background:linear-gradient(180deg,rgba(8,14,22,.55) 0%,rgba(10,18,24,.75) 100%)">
-      <div class="sub">Star-Well Survey · v5</div>
+      <div class="sub">Star-Well Survey · v6</div>
       <h1>LARAMIE<br>PLAINS</h1>
       <p>The Union Pacific has not yet reached these high plains. You arrive with a survey chain and a blank field book. Something under the old well is answering the measurements — and the storm is coming.</p>
       <button class="start" id="startBtn">BEGIN THE JOURNEY</button>
@@ -105,7 +105,7 @@ footer{font-size:10px;color:var(--muted);padding-bottom:4px;text-align:center}
   <button id="helpBtn">Help</button>
   <button id="resetBtn">New Game</button>
 </section>
-<footer>Star-Well Survey · v5 — clean sprites · no borders · cinematic · sprint · storm</footer>
+<footer>Star-Well Survey · v6 — opening cinematic · story beats · clean sprites · sprint · storm</footer>
 
 <div id="modal" class="modal"><div class="panel"><button class="close" id="closeModal">×</button><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
 
@@ -276,6 +276,8 @@ let muted = false;
 let lightning = 0, stormT = 0, rain = [];
 let exitCd = 0;
 let introT = 0; // cinematic intro timer
+let cutscene = null; // {id, page, pages:[{speaker, text, choices?}]}
+
 
 function save(){ try{ localStorage.setItem(SAVE, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ return JSON.parse(localStorage.getItem(SAVE)||'null'); }catch(e){ return null; } }
@@ -622,6 +624,83 @@ function move(dt){
   }
 }
 
+
+// ---------- Cutscenes ----------
+const CUTSCENES = {
+  opening: {
+    id: 'opening',
+    pages: [
+      {speaker: 'Narrator', text: '1867. The Union Pacific has not yet reached these high plains. You ride west with a brass survey chain, a blank field book, and orders to fix the line before the rails arrive.'},
+      {speaker: 'Narrator', text: 'Camp is already pitched when you arrive. The cook fire is low. The wind carries the sound of a train that does not yet exist — and something older beneath it.'},
+      {speaker: 'Mara', text: 'Surveyor. Two brass stakes went missing in the night. Find them both before the storm. The old well… the chain trembles near it.'},
+      {speaker: 'Narrator', text: 'She does not wait for an answer. The Medicine Bow ridge sits dark under a rising cloud bank. Your work begins.'}
+    ]
+  },
+  stakes: {
+    id: 'stakes',
+    pages: [
+      {speaker: 'Narrator', text: 'Both brass stakes are secured. When you lay them side by side on the field table, the etched marks refuse every star chart in the office.'},
+      {speaker: 'Narrator', text: 'The line they form does not run to the railhead. It runs straight down — into the old well at the edge of camp.'},
+      {speaker: 'Narrator', text: 'The storm is closer now. Thunder answers from the ridge. Whatever is under the Star-Well has been waiting for these measurements.'}
+    ]
+  },
+  well: {
+    id: 'well',
+    pages: [
+      {speaker: 'Narrator', text: 'Three clear tones rise from the dark. A narrow stair of warm stone reveals itself where only mud and timber should be.'},
+      {speaker: 'The Voice', text: 'Surveyor. You have measured the land. Now measure the sky.'},
+      {speaker: 'Narrator', text: 'The words settle in your bones. The stair waits. The mystery has only begun — and the ridge still holds the key.'}
+    ]
+  },
+  door: {
+    id: 'door',
+    pages: [
+      {speaker: 'Narrator', text: 'The brass key turns with a sound like a bell struck underground. The sealed door opens onto a stair that should not exist.'},
+      {speaker: 'Narrator', text: 'Beyond the threshold, stars hang where no sky should be. The survey continues beneath the plains.'},
+      {speaker: 'The Voice', text: 'La Ramée never left. His last measurement is still unfinished. Complete it.'},
+      {speaker: 'Narrator', text: 'You step forward. The work is not over. It has only changed direction.'}
+    ]
+  }
+};
+
+function startCutscene(id){
+  const cs = CUTSCENES[id];
+  if(!cs) return;
+  cutscene = {id: cs.id, page: 0, pages: cs.pages};
+  showCutscenePage();
+}
+
+function showCutscenePage(){
+  if(!cutscene) return;
+  const pg = cutscene.pages[cutscene.page];
+  const isLast = cutscene.page >= cutscene.pages.length - 1;
+  const body = `<div style="margin-bottom:10px"><span style="color:var(--gold);font-size:11px;letter-spacing:.08em;text-transform:uppercase">${pg.speaker}</span></div>
+    <p style="font-size:14px;line-height:1.55;margin-bottom:14px">${pg.text}</p>
+    <button id="csNext" style="background:var(--accent);border:none;color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px">${isLast ? 'Continue' : 'Next'}</button>`;
+  $('modalTitle').textContent = '';
+  $('modalBody').innerHTML = body;
+  $('modal').classList.add('show');
+  // wire button
+  setTimeout(()=>{
+    const btn = document.getElementById('csNext');
+    if(btn) btn.onclick = ()=>{
+      if(cutscene.page < cutscene.pages.length - 1){
+        cutscene.page++;
+        showCutscenePage();
+      } else {
+        const finished = cutscene.id;
+        cutscene = null;
+        closeDialog();
+        if(finished === 'opening') toast('Find the brass survey stakes near camp.');
+        else if(finished === 'stakes') toast('Investigate the old well.');
+        else if(finished === 'well') toast('Seek the Wind Shrine on the ridge.');
+        else if(finished === 'door') toast('The survey continues beneath the stars…');
+      }
+    };
+  }, 30);
+}
+
+
 function interact(){
   if(S.interactCd>0||!S.started) return;
   S.interactCd=0.3; resume(); SFX.interact();
@@ -632,11 +711,11 @@ function interact(){
       if(o.id==='A'&&!S.stakeA){ S.stakeA=true; note('Brass stake A recovered. The coordinates refuse to match any star chart I know.'); SFX.stake(); burst(o.x*T+16,o.y*T+16,14,'#e0b45c'); toast('Survey stake A secured!'); }
       else if(o.id==='B'&&!S.stakeB){ S.stakeB=true; note('Brass stake B recovered. Together they form a line that ends beneath the old well.'); SFX.stake(); burst(o.x*T+16,o.y*T+16,14,'#e0b45c'); toast('Survey stake B secured!'); }
       else toast('Already recorded.');
-      if(S.stakeA&&S.stakeB&&!S.heardWell){ note('Both stakes point to the same impossible place: under the Star-Well.'); SFX.success(); toast('Quest: investigate the old well.'); }
+      if(S.stakeA&&S.stakeB&&!S.flags.stakesCS){ S.flags.stakesCS=true; note('Both stakes point to the same impossible place: under the Star-Well.'); SFX.success(); setTimeout(()=>startCutscene('stakes'), 500); }
       save(); break;
     case'well':
       if(!(S.stakeA&&S.stakeB)) dialog('The Old Well','<p>The rim is etched with markings that look almost like star positions. Your chain trembles, but you need both brass stakes to fix its true location.</p>');
-      else if(!S.heardWell){ S.heardWell=true; SFX.well(); note('The Star-Well answered with three tones. A stair of warm stone appeared. Something down there knows the survey.'); dialog('The Star-Well','<p>Three clear tones rise from the dark. A narrow stairway of impossible stone reveals itself.</p><p><em>“Surveyor,”</em> a voice without a throat says, <em>“you have measured the land. Now measure the sky.”</em></p><p>The mystery has only begun.</p>'); save(); }
+      else if(!S.heardWell){ S.heardWell=true; SFX.well(); note('The Star-Well answered with three tones. A stair of warm stone appeared. Something down there knows the survey.'); save(); setTimeout(()=>startCutscene('well'), 300); }
       else dialog('The Star-Well','<p>The stair still descends. Whatever waits below remembers Jacques La Ramée — and it is waiting for the rest of the survey.</p>');
       break;
     case'npc':
@@ -651,7 +730,7 @@ function interact(){
       else toast('The shrine is quiet. The map is yours.'); break;
     case'cave':
       if(!S.hasKey) dialog('Sealed Door','<p>A brass lock, not iron. The metal is warm. You need a key that matches the survey.</p>');
-      else if(!S.flags.door){ S.flags.door=true; SFX.portal(); SFX.success(); note('The Understar Door opened with a sound like a bell struck underground.'); dialog('Understar Door','<p>The key turns. Beyond, a stair descends toward an impossible sky — stars where no sky should be.</p><p>The survey continues beneath the plains. La Ramée’s last measurement is still unfinished.</p>'); save(); }
+      else if(!S.flags.door){ S.flags.door=true; SFX.portal(); SFX.success(); note('The Understar Door opened with a sound like a bell struck underground.'); save(); setTimeout(()=>startCutscene('door'), 300); }
       else dialog('Understar Door','<p>The passage remains open. The stars below do not move with the night.</p>'); break;
     case'fire': toast('Warmth against the high-plains wind and the coming storm.'); burst(o.x*T+16,o.y*T+10,6,'#ff8844'); break;
     case'tent': toast('Canvas snaps in the rising wind.'); break;
@@ -1070,8 +1149,15 @@ $('startBtn').onclick=()=>{
   S.started=true; $('title').classList.add('hidden');
   resume(); startAmbient(); startMusic(); SFX.collect();
   if(!S.notes.length) note('1867: You arrive on the Laramie Plains with a brass survey chain and a blank field book. The storm line sits on the Medicine Bows.');
-  toast('Find the survey stakes. Gold frames mark exits. Hold Shift to sprint.');
   updateHud(); save();
+  // Opening cinematic
+  if(!S.flags.sawOpening){
+    S.flags.sawOpening = true;
+    save();
+    setTimeout(()=>startCutscene('opening'), 400);
+  } else {
+    toast('Find the survey stakes. Gold frames mark exits. Hold Shift to sprint.');
+  }
 };
 $('interactBtn').onclick=()=>{ resume(); interact(); };
 $('toolBtn').onclick=()=>{ resume(); useTool(); };
